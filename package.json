@@ -2,7 +2,9 @@
   "name": "nuxt-app",
   "private": true,
   "scripts": {
-    "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:unit": "vitest",
     "coverage": "vitest run --coverage",
     "build": "nuxt build",
     "dev": "nuxt dev",
