@@ -6,5 +6,6 @@ export default defineConfig({
             provider: 'istanbul',
             reporter: ['text', 'html', 'cobertura'],
         },
+        include: ['test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
 });
