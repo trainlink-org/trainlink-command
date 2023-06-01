@@ -5,7 +5,7 @@ import { mount } from '@vue/test-utils';
 import ButtonComponent from 'components/ButtonComponent.vue';
 
 describe('A test', async () => {
-    await setup({ server: false });
+    // await setup({ server: false });
 
     test('mount component', () => {
         expect(ButtonComponent).toBeTruthy();

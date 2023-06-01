@@ -10,5 +10,6 @@ export default defineConfig({
         },
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         root: './',
+        environment: 'jsdom',
     },
 });
