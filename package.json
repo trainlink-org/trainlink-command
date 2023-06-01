@@ -24,11 +24,12 @@
     "@vue/test-utils": "^2.3.2",
     "nuxt": "^3.5.2",
     "prettier": "2.8.8",
-    "vitest": "^0.31.4"
+    "typescript": "^5.0.4",
+    "vitest": "^0.31.4",
+    "vue-tsc": "^1.6.5"
   },
   "dependencies": {
-    "@trainlink-org/shared-lib": "^0.0.1-alpha.1",
-    "socket.io-client": "^4.6.2",
-    "coursework-lib": "github:matt-vdv/coursework-lib"
+    "@trainlink-org/shared-lib": "^0.0.1-alpha.2",
+    "socket.io-client": "^4.6.2"
   }
 }
