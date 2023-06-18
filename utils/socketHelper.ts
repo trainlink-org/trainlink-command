@@ -14,10 +14,10 @@ import type {
 } from '@trainlink-org/trainlink-types';
 import { Loco } from '@trainlink-org/shared-lib';
 
-// export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(('http://'+window.location.hostname+':6868'));
-export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-    'http://localhost:6868'
-);
+export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
+    typeof window !== 'undefined'
+        ? io('http://' + window.location.hostname + ':6868')
+        : io('http://localhost:6868');
 
 import { store } from './main';
 
