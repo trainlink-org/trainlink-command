@@ -37,8 +37,8 @@ const selectedComputed = computed({
 
 <template>
     <div class="relative h-6 w-max text-left outline-none" :tabindex="tabindex" @blur="open = false">
-        Always visible heading
-        <div class="z-20 h-6 w-32 cursor-pointer select-none rounded-t rounded-b-none border border-solid border-slate-800 text-white"
+        <!-- Always visible heading -->
+        <div class="z-20 h-6 w-32 cursor-pointer select-none rounded-t rounded-b-none border border-solid border-slate-800"
             :class="open ? 'border-t-slate-800 border-x-slate-800 bg-slate-500 text-white' : 'bg-inherit text-black border-none'"
             @click="open = !open">
             <div class="mx-auto w-fit border border-transparent border-b-black px-1 text-center">
@@ -49,11 +49,11 @@ const selectedComputed = computed({
         </div>
         <div v-show="open"
             class="absolute inset-x-0 z-20 w-32 overflow-hidden rounded-b border border-slate-800 border-t-slate-500  bg-slate-500">
-            Each item in the list
+            <!-- Each item in the list -->
             <div v-for="(option, i) of     props.options    " :key="i"
                 class=" w-32 cursor-pointer select-none text-center text-white hover:bg-slate-200" @click="selectedComputed = option;
                 open = false;
-                                                                                ">
+                ">
                 {{ option }}
             </div>
         </div>
