@@ -5,7 +5,7 @@ export default defineNuxtConfig({
 
     routeRules: {
         '/routes': { ssr: false },
-        '/settings/routes': { ssr: false },
+        '/settings/*': { ssr: false },
     },
 
     devtools: {
