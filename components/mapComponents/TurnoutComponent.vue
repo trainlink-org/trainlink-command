@@ -4,8 +4,8 @@
 import { calculateSize, calculateCoord, type Coordinate } from './shared';
 
 const props = defineProps({
-    coordinate: {type: Object as () => Coordinate, required: true},
-    activeRoute: {type: Boolean, required: true},
+    coordinate: { type: Object as () => Coordinate, required: true },
+    activeRoute: { type: Boolean, required: true },
 });
 const xCoord = computed(() => {
     return calculateCoord(props.coordinate).x;

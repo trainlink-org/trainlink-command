@@ -8,9 +8,9 @@ import { socket } from '@/utils/socketHelper';
 
 const router = useRouter();
 
-function selectHandler(event: string){
+function selectHandler(event: string) {
     console.log(event);
-    router.push({name: event});
+    router.push({ name: event });
 }
 
 function setState() {
@@ -19,58 +19,36 @@ function setState() {
 </script>
 
 <template>
-    <div
-        class="absolute left-0 top-0 z-10 flex h-10 items-center pl-1"
-    >
-        <label
-            class="switch"
-        >
-            <input
-                v-model="trackPower"
-                type="checkbox"
-                @click="setState"
-            >
-            <span
-                class="slider round"
-            />
+    <div class="absolute left-0 top-0 z-10 flex h-10 items-center pl-1">
+        <label class="switch">
+            <input v-model="trackPower" type="checkbox" @click="setState" />
+            <span class="slider round" />
         </label>
     </div>
-    <div class="absolute top-0 left-0 hidden h-10 w-full flex-row items-center justify-evenly border sm:flex">
-        <RouterLink
-            class="w-40 text-center"
-            to="/"
-        >
-            Throttle
-        </RouterLink>
-        <RouterLink
-            class="w-40 text-center"
-            to="/routes"
-        >
-            Routes
-        </RouterLink>
-        <NuxtLink
-            class="w-40 text-center"
-            to="/automations"
-        >
+    <div
+        class="absolute top-0 left-0 hidden h-10 w-full flex-row items-center justify-evenly border sm:flex"
+    >
+        <RouterLink class="w-40 text-center" to="/"> Throttle </RouterLink>
+        <RouterLink class="w-40 text-center" to="/routes"> Routes </RouterLink>
+        <NuxtLink class="w-40 text-center" to="/automations">
             Automations
         </NuxtLink>
     </div>
-    <div class="absolute top-0 left-0 flex h-10 w-full flex-row items-center justify-evenly border sm:hidden">
+    <div
+        class="absolute top-0 left-0 flex h-10 w-full flex-row items-center justify-evenly border sm:hidden"
+    >
         <SelectNavComponent
             :options="['Throttle', 'Routes', 'Automations']"
             @input="selectHandler"
         />
     </div>
-    <RouterLink
-        class="absolute right-0 top-0"
-        to="/settings"
-    >
+    <RouterLink class="absolute right-0 top-0" to="/settings">
         <img
             src="~/assets/icons/gear-fill.svg"
             alt="Settings"
             width="32"
             class="h-10 p-1"
-        >
+        />
     </RouterLink>
 </template>
 
@@ -99,28 +77,28 @@ function setState() {
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
 }
 
 .slider:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 26px;
     width: 26px;
     left: 4px;
     bottom: 4px;
     background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
 }
 
 input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #2196f3;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {

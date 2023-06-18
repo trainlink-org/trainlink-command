@@ -1,3 +1,5 @@
 coverage
 .nuxt
 playwright-report
+.output
+docs/.vitepress/cache

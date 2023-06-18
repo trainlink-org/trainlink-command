@@ -8,14 +8,11 @@ import { connected } from './utils/main';
 
 <template>
     <div class="h-screen">
-        <NavComponent/>
+        <NavComponent />
         <!-- <RouterView/> -->
         <NuxtPage />
     </div>
-    <div
-        v-if="!connected"
-        class="cursor-wait"
-    >
+    <div v-if="!connected" class="cursor-wait">
         <div
             class="absolute top-0 left-0 z-20 h-screen w-screen bg-black opacity-25"
         />
@@ -34,14 +31,8 @@ import { connected } from './utils/main';
             >
                 <g>
                     <linearGradient id="linear-gradient">
-                        <stop
-                            offset="0%"
-                            stop-color="#FFFFFF00"
-                        />
-                        <stop
-                            offset="90%"
-                            stop-color="#202020"
-                        />
+                        <stop offset="0%" stop-color="#FFFFFF00" />
+                        <stop offset="90%" stop-color="#202020" />
                     </linearGradient>
                     <path
                         d="M63.85 0A63.85 63.85 0 1 1 0 63.85 63.85 63.85 0 0 1 63.85 0zm.65 19.5a44 44 0 1 1-44 44 44 44 0 0 1 44-44z"
@@ -58,14 +49,9 @@ import { connected } from './utils/main';
                     />
                 </g>
             </svg>
-            <p
-                class="select-none text-xl"
-            >
-                Connecting...
-            </p>
+            <p class="select-none text-xl">Connecting...</p>
         </div>
     </div>
 </template>
 
-<style>
-</style>
+<style></style>

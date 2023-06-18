@@ -2,33 +2,26 @@
 // import { computed } from 'vue';
 
 const props = defineProps({
-    speed: {type: Number, required: true}
+    speed: { type: Number, required: true },
 });
 
 const emit = defineEmits<{
-    (e: 'update:speed', value: number): void
+    (e: 'update:speed', value: number): void;
 }>();
 
 const value = computed({
     get() {
         return props.speed.toString();
     },
-    set(value){
+    set(value) {
         const intValue = parseInt(value);
         emit('update:speed', intValue);
-    }
+    },
 });
-
 </script>
 
 <template>
-    <input
-        v-model="value"
-        class="slider"
-        type="range"
-        min="0"
-        max="126"
-    >
+    <input v-model="value" class="slider" type="range" min="0" max="126" />
 </template>
 
 <style scoped>
@@ -46,13 +39,13 @@ const value = computed({
     height: 16px;
     cursor: pointer;
     box-shadow: 0px 0px 0px #000000;
-    background: #B6B6B6;
+    background: #b6b6b6;
     border-radius: 25px;
-    border: 1px solid #8A8A8A;
+    border: 1px solid #8a8a8a;
     -webkit-appearance: none;
 }
 .slider:focus::-webkit-slider-runnable-track {
-    background: #B6B6B6;
+    background: #b6b6b6;
 }
 
 .slider::-moz-range-track {
@@ -60,12 +53,12 @@ const value = computed({
     height: 16px;
     cursor: pointer;
     box-shadow: 0px 0px 0px #000000;
-    background: #B6B6B6;
+    background: #b6b6b6;
     border-radius: 25px;
-    border: 1px solid #8A8A8A;
+    border: 1px solid #8a8a8a;
 }
 .slider:disabled::-moz-range-track {
-    background: #A6A6A6;
+    background: #a6a6a6;
 }
 
 .slider::-moz-range-progress {
@@ -74,51 +67,50 @@ const value = computed({
     border-radius: 25px;
 }
 .slider::-webkit-slider-thumb {
-    border: 1px solid #8A8A8A;
+    border: 1px solid #8a8a8a;
     height: 24px;
     width: 35px;
     border-radius: 6px;
-    background: #DADADA;
+    background: #dadada;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -5px;
 }
 .slider:disabled::-webkit-slider-thumb {
-    background: #CACACA;
+    background: #cacaca;
 }
 .slider::-moz-range-thumb {
-    border: 1px solid #8A8A8A;
+    border: 1px solid #8a8a8a;
     height: 24px;
     width: 35px;
     border-radius: 6px;
-    background: #DADADA;
+    background: #dadada;
     cursor: pointer;
 }
 .slider:disabled::-moz-range-thumb {
-    background: #CACACA;
+    background: #cacaca;
 }
 
-
 .slider::-ms-fill-lower {
-    background: #B6B6B6;
-    border: 1px solid #8A8A8A;
+    background: #b6b6b6;
+    border: 1px solid #8a8a8a;
     border-radius: 50px;
     box-shadow: 0px 0px 0px #000000;
 }
 .slider::-ms-fill-upper {
-    background: #B6B6B6;
-    border: 1px solid #8A8A8A;
+    background: #b6b6b6;
+    border: 1px solid #8a8a8a;
     border-radius: 50px;
     box-shadow: 0px 0px 0px #000000;
 }
 .slider::-ms-thumb {
     margin-top: 1px;
     box-shadow: 1px 1px 1px #828282;
-    border: 1px solid #8A8A8A;
+    border: 1px solid #8a8a8a;
     height: 24px;
     width: 35px;
     border-radius: 6px;
-    background: #DADADA;
+    background: #dadada;
     cursor: pointer;
 }
 .slider::-ms-track {
@@ -130,9 +122,9 @@ const value = computed({
     color: transparent;
 }
 .slider:focus::-ms-fill-lower {
-    background: #B6B6B6;
+    background: #b6b6b6;
 }
 .slider:focus::-ms-fill-upper {
-    background: #B6B6B6;
+    background: #b6b6b6;
 }
 </style>

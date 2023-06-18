@@ -15,7 +15,7 @@ export class Loco {
         address ??= 3;
         this.name = name;
         // Validate input
-        if (address >= 0 && address <=10293) {
+        if (address >= 0 && address <= 10293) {
             this.address = address;
         } else {
             this.address = 3; //Default value if given value out of range
@@ -28,7 +28,7 @@ export class Loco {
             this._speed = newSpeed;
         }
     }
-    
+
     get speed() {
         return this._speed;
     }
@@ -42,7 +42,7 @@ export class Loco {
     }
 
     setFunction(functionNum: number, state: boolean) {
-        if(functionNum >= 0 && functionNum <=28) {
+        if (functionNum >= 0 && functionNum <= 28) {
             this.functions[functionNum] = state;
         }
     }
@@ -51,11 +51,11 @@ export class Loco {
         return this.functions[functionNum];
     }
 
-    toString(){
+    toString() {
         return `${this.name} ${this.address} - ${this.speed} ${this.direction}`;
     }
 
-    static fromJson(d: Record<string, unknown>): Loco{
+    static fromJson(d: Record<string, unknown>): Loco {
         return Object.assign(new Loco(), d);
     }
 }
@@ -70,7 +70,7 @@ export abstract class LocoStoreBase {
     /**
      * Creates a new empty LocoStore
      */
-    constructor(){
+    constructor() {
         this.objectStore = new Map();
         this.nameStore = new Map();
     }
@@ -79,12 +79,12 @@ export abstract class LocoStoreBase {
      *  Adds a {@link Loco} to the LocoStore
      * 	@param loco The {@link Loco} to add to the LocoStore
      */
-    add(loco: Loco):void {
+    add(loco: Loco): void {
         this.objectStore.set(loco.address, loco);
         this.nameStore.set(loco.name, loco.address);
     }
 
-    getLoco(identifier: string|number): Promise<Loco> {
+    getLoco(identifier: string | number): Promise<Loco> {
         return new Promise<Loco>((resolve, reject) => {
             const loco = this.getLocoFromIdentifier(identifier);
             if (loco) {
@@ -95,7 +95,7 @@ export abstract class LocoStoreBase {
         });
     }
 
-    getAllLocos(): IterableIterator<Loco>{
+    getAllLocos(): IterableIterator<Loco> {
         return this.objectStore.values();
     }
 
@@ -107,7 +107,10 @@ export abstract class LocoStoreBase {
     deleteLoco(identifier: string | number): boolean {
         const loco = this.getLocoFromIdentifier(identifier);
         if (loco !== undefined) {
-            return this.nameStore.delete(loco.name) && this.objectStore.delete(loco.address);
+            return (
+                this.nameStore.delete(loco.name) &&
+                this.objectStore.delete(loco.address)
+            );
         } else {
             return false;
         }
@@ -119,13 +122,13 @@ export abstract class LocoStoreBase {
      * @param name The new name for the Loco
      * @param address The new address for the Loco
      */
-    updateLoco(identifier: locoIdentifier, name?: string, address?:number) {
+    updateLoco(identifier: locoIdentifier, name?: string, address?: number) {
         const loco = this.getLocoFromIdentifier(identifier);
         if (loco) {
             name ??= loco.name;
             address ??= loco.address;
 
-            const newLoco = new Loco(name,address);
+            const newLoco = new Loco(name, address);
             newLoco.speed = loco.speed;
             newLoco.direction = loco.direction;
 
@@ -138,10 +141,9 @@ export abstract class LocoStoreBase {
     }
 
     toString() {
-        let string ='\nContents of LocoStore\n--------------------\n';
+        let string = '\nContents of LocoStore\n--------------------\n';
         this.objectStore.forEach((loco, key) => {
             string += `${key} => ${loco.name} ${loco.address} - ${loco.speed} ${loco.direction}\n`;
-
         });
         return string;
     }
@@ -151,7 +153,9 @@ export abstract class LocoStoreBase {
      * @param identifier Identifier of {@link Loco} to find
      * @returns \{@link Loco} if found, undefined if not.
      */
-    protected getLocoFromIdentifier(identifier: string|number): Loco|undefined {
+    protected getLocoFromIdentifier(
+        identifier: string | number
+    ): Loco | undefined {
         let locoId: number;
         if (typeof identifier === 'string') {
             const locoIdUndef = this.nameStore.get(identifier);
@@ -172,17 +176,21 @@ export abstract class LocoStoreBase {
  */
 export interface locoStoreClient {
     onLoaded(callback: () => void): void;
-    listener(throttle: Throttle, throttleID: number, callback: () => void): void;
+    listener(
+        throttle: Throttle,
+        throttleID: number,
+        callback: () => void
+    ): void;
 }
 
 /**
  * Describes a throttle, used by the client side locoStore
  */
-export interface Throttle{
-    locoAddress: number,
-    name: string,
-    speed: number,
-    direction: Direction,
-    sliderDisabled: boolean,
-    disabled: boolean
+export interface Throttle {
+    locoAddress: number;
+    name: string;
+    speed: number;
+    direction: Direction;
+    sliderDisabled: boolean;
+    disabled: boolean;
 }

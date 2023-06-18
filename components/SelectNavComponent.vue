@@ -1,16 +1,15 @@
 <script setup lang="ts">
-
 // import { onMounted, ref, computed } from 'vue';
 // import { useRoute } from 'vue-router';
 
 const props = defineProps({
-    options: {type: Array<string>, required: true},
-    tabindex: {type: Number, required: false, default: 0}
+    options: { type: Array<string>, required: true },
+    tabindex: { type: Number, required: false, default: 0 },
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emit = defineEmits<{
-    (e: 'input', value: string): void
+    (e: 'input', value: string): void;
 }>();
 
 const route = useRoute();
@@ -21,7 +20,6 @@ const open = ref(false);
 const itemsClasses = computed(() => {
     return !open.value ? 'hidden' : '';
 });
-
 
 const selectedClasses = computed(() => {
     return open.value ? 'bg-primary-100' : 'bg-inherit';
@@ -38,7 +36,6 @@ const routeName = computed(() => {
 onMounted(() => {
     console.log(selected.value);
 });
-
 </script>
 
 <template>
@@ -57,7 +54,9 @@ onMounted(() => {
                 :class="[routeNameClasses]"
             >
                 {{ routeName }}
-                <span class="ml-2 h-0 w-0 border-4 border-solid border-transparent border-x-transparent border-t-black border-b-transparent"/>
+                <span
+                    class="ml-2 h-0 w-0 border-4 border-solid border-transparent border-x-transparent border-t-black border-b-transparent"
+                />
             </div>
         </div>
         <div
@@ -67,7 +66,7 @@ onMounted(() => {
             <div
                 v-for="(option, i) of props.options"
                 :key="i"
-                class=" w-full cursor-pointer select-none text-center hover:bg-accent-200"
+                class="w-full cursor-pointer select-none text-center hover:bg-accent-200"
                 @click="
                     selected = option;
                     open = false;
@@ -80,6 +79,4 @@ onMounted(() => {
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

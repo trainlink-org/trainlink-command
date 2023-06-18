@@ -16,7 +16,7 @@ if (process.client) {
 
     const onWidthChange = () => {
         windowWidth.value = window.innerWidth;
-        if (windowWidth.value >= 640 ) {
+        if (windowWidth.value >= 640) {
             throttleState.smallScreen = false;
         } else {
             throttleState.smallScreen = true;
@@ -24,14 +24,13 @@ if (process.client) {
     };
     onMounted(() => {
         window.addEventListener('resize', onWidthChange);
-        if (windowWidth.value >= 640 ) {
+        if (windowWidth.value >= 640) {
             throttleState.smallScreen = false;
         } else {
             throttleState.smallScreen = true;
         }
     });
     onUnmounted(() => window.removeEventListener('resize', onWidthChange));
-
 }
 
 const activeClasses = 'bg-accent-200 cursor-default';
@@ -39,12 +38,11 @@ const activeClasses = 'bg-accent-200 cursor-default';
 const throttleState = reactive({
     throttles: [true, false],
     throttleNames: ['Empty', 'Empty'],
-    spanClasses: [activeClasses + ' italic','italic'],
-    smallScreen: false
+    spanClasses: [activeClasses + ' italic', 'italic'],
+    smallScreen: false,
 });
 
 const activeIndex = ref(0);
-
 
 function throttleSelector(targetThrottle: number) {
     console.log(`Selector ${targetThrottle} clicked`);
@@ -64,28 +62,40 @@ function throttleSelector(targetThrottle: number) {
 }
 
 // const returnPath = route.params.prev ? `/${route.params.prev}` : '';
-
 </script>
 
 <template>
     <div class="flex h-full flex-col items-center justify-center">
-        <div class="flex w-full flex-col items-center p-2 sm:flex-row sm:place-content-evenly">
+        <div
+            class="flex w-full flex-col items-center p-2 sm:flex-row sm:place-content-evenly"
+        >
             <ThrottleComponent
-                v-show="throttleState.throttles[0] || !throttleState.smallScreen"
+                v-show="
+                    throttleState.throttles[0] || !throttleState.smallScreen
+                "
                 :id="0"
-                @name-change="(name) => {throttleState.throttleNames[0] = name; throttleState.spanClasses[0] = activeClasses}"
+                @name-change="
+                    (name) => {
+                        throttleState.throttleNames[0] = name;
+                        throttleState.spanClasses[0] = activeClasses;
+                    }
+                "
             />
             <ThrottleComponent
-                v-show="throttleState.throttles[1] || !throttleState.smallScreen"
+                v-show="
+                    throttleState.throttles[1] || !throttleState.smallScreen
+                "
                 :id="1"
-                @name-change="(name) => {throttleState.throttleNames[1] = name; throttleState.spanClasses[1] = activeClasses}"
+                @name-change="
+                    (name) => {
+                        throttleState.throttleNames[1] = name;
+                        throttleState.spanClasses[1] = activeClasses;
+                    }
+                "
             />
         </div>
     </div>
-    <div
-        v-show="throttleState.smallScreen"
-        class="absolute bottom-0 w-full"
-    >
+    <div v-show="throttleState.smallScreen" class="absolute bottom-0 w-full">
         <div
             class="mx-auto my-2 flex w-5/6 cursor-pointer flex-row items-center"
         >
@@ -130,5 +140,4 @@ function throttleSelector(targetThrottle: number) {
     </div>
 </template>
 
-<style>
-</style>
+<style></style>

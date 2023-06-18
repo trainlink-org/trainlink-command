@@ -11,7 +11,7 @@ const windowWidth = ref(window.innerWidth);
 
 const onWidthChange = () => {
     windowWidth.value = window.innerWidth;
-    if (windowWidth.value >= 768 ) {
+    if (windowWidth.value >= 768) {
         smallScreen.value = false;
     } else {
         smallScreen.value = true;
@@ -19,7 +19,7 @@ const onWidthChange = () => {
 };
 onMounted(() => {
     window.addEventListener('resize', onWidthChange);
-    if (windowWidth.value >= 768 ) {
+    if (windowWidth.value >= 768) {
         smallScreen.value = false;
     } else {
         smallScreen.value = true;
@@ -33,7 +33,6 @@ watch(route, (newRoute) => {
         detailsOpen.value = false;
     }
 });
-
 </script>
 
 <template>
@@ -42,24 +41,31 @@ watch(route, (newRoute) => {
             v-if="!detailsOpen || !smallScreen"
             class="h-5/6 w-11/12 overflow-y-scroll rounded-lg border-4 border-borderColor-300 sm:w-5/6 md:w-3/12"
         >
-            <ul
-                class="h-full"
-            >
+            <ul class="h-full">
                 <li
                     class="flex h-8 w-full cursor-pointer items-center justify-center border-b-2 border-primary-300 px-2 hover:bg-primary-200 select-none"
-                    @click="router.push('/settings/throttle'); detailsOpen = true"
+                    @click="
+                        router.push('/settings/throttle');
+                        detailsOpen = true;
+                    "
                 >
                     Throttle
                 </li>
                 <li
                     class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-primary-300 select-none"
-                    @click="router.push('/settings/routes'); detailsOpen = true"
+                    @click="
+                        router.push('/settings/routes');
+                        detailsOpen = true;
+                    "
                 >
                     Routes
                 </li>
                 <li
                     class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-primary-30 select-none"
-                    @click="router.push('/settings/about'); detailsOpen = true"
+                    @click="
+                        router.push('/settings/about');
+                        detailsOpen = true;
+                    "
                 >
                     About
                 </li>
@@ -69,7 +75,7 @@ watch(route, (newRoute) => {
             v-if="detailsOpen || !smallScreen"
             class="h-5/6 w-11/12 rounded-lg border-4 md:w-4/6"
         >
-            <RouterView/>
+            <RouterView />
         </div>
         <div
             class="absolute bottom-0 left-0 mb-2 ml-2 h-10 w-10 rounded-full border-2 border-borderColor-300 bg-primary-200 p-1 pl-2 focus:bg-accent-400"

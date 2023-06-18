@@ -7,29 +7,27 @@
 
 import { store, allocatedLocos, targetNameCache, cached } from '@/utils/main';
 import { type Throttle } from '@trainlink-org/shared-lib';
-import { Direction, PID } from '@trainlink-org/trainlink-types'
+import { Direction, PID } from '@trainlink-org/trainlink-types';
 // import { socket } from '@/utils/socketHelper';
 
 interface DataStore {
-    targetName: string,
-    locoNames: string[],
-    forwardStyles: string,
-    stopStyles: string,
-    reverseStyles: string,
-    locked: boolean,
-    lockedReason: string,
-    automationPID: PID,
+    targetName: string;
+    locoNames: string[];
+    forwardStyles: string;
+    stopStyles: string;
+    reverseStyles: string;
+    locked: boolean;
+    lockedReason: string;
+    automationPID: PID;
 }
 
-
 const props = defineProps({
-    id: { type: Number, required: true }
+    id: { type: Number, required: true },
 });
 
 const emit = defineEmits<{
-    (e: 'nameChange', value: string): void
+    (e: 'nameChange', value: string): void;
 }>();
-
 
 onMounted(() => {
     console.log('mounted');
@@ -51,35 +49,42 @@ onMounted(() => {
 });
 
 function loadData() {
-    store.getLoco(data.targetName).then((loco) => {
-        throttle.locoAddress = loco.address;
-        throttle.name = loco.name;
-        throttle.speed = loco.speed;
-        throttle.direction = loco.direction;
-        throttle.disabled = false;
-    }).then(() => {
-        const automationPID = allocatedLocos.value.get(throttle.locoAddress);
-        // console.log(throttle.locoAddress);
-        if (automationPID) {
-            data.locked = true;
-            data.lockedReason = `Train is being used by automation ${allocatedLocos.value.get(throttle.locoAddress)}`;
-            throttle.disabled = true;
-            data.automationPID = automationPID;
-        } else if (data.targetName !== 'Select a Train') {
-            data.locked = false;
-            data.lockedReason = '';
+    store
+        .getLoco(data.targetName)
+        .then((loco) => {
+            throttle.locoAddress = loco.address;
+            throttle.name = loco.name;
+            throttle.speed = loco.speed;
+            throttle.direction = loco.direction;
             throttle.disabled = false;
-            data.automationPID = '';
-        }
-    }).catch(() => {
-        throttle.disabled = true;
-    });
+        })
+        .then(() => {
+            const automationPID = allocatedLocos.value.get(
+                throttle.locoAddress
+            );
+            // console.log(throttle.locoAddress);
+            if (automationPID) {
+                data.locked = true;
+                data.lockedReason = `Train is being used by automation ${allocatedLocos.value.get(
+                    throttle.locoAddress
+                )}`;
+                throttle.disabled = true;
+                data.automationPID = automationPID;
+            } else if (data.targetName !== 'Select a Train') {
+                data.locked = false;
+                data.lockedReason = '';
+                throttle.disabled = false;
+                data.automationPID = '';
+            }
+        })
+        .catch(() => {
+            throttle.disabled = true;
+        });
 }
 onUnmounted(() => {
     targetNameCache[props.id] = data.targetName;
     cached[props.id] = true;
 });
-
 
 const data: DataStore = reactive({
     targetName: 'Select a Train',
@@ -98,7 +103,7 @@ const throttle: Throttle = reactive({
     speed: 0,
     direction: Direction.stopped,
     sliderDisabled: false,
-    disabled: true
+    disabled: true,
 });
 
 watch(
@@ -112,8 +117,6 @@ store.listener(throttle, props.id, () => {
     setThrottle(throttle.direction);
 });
 
-
-
 store.onLoaded(() => {
     for (const loco of store.getAllLocos()) {
         data.locoNames.push(loco.name);
@@ -125,7 +128,6 @@ store.onLoaded(() => {
         }
     );
 });
-
 
 function setThrottle(direction: Direction) {
     switch (direction) {
@@ -157,7 +159,9 @@ watch(allocatedLocos, (allocatedLocos) => {
     const automationPID = allocatedLocos.get(throttle.locoAddress);
     if (automationPID) {
         data.locked = true;
-        data.lockedReason = `Train is being used by automation ${allocatedLocos.get(throttle.locoAddress)}`;
+        data.lockedReason = `Train is being used by automation ${allocatedLocos.get(
+            throttle.locoAddress
+        )}`;
         throttle.disabled = true;
         data.automationPID = automationPID;
     } else if (data.targetName !== 'Select a Train') {
@@ -177,57 +181,104 @@ function refreshNames() {
         data.locoNames = names;
     }
 }
-
 </script>
 
 <template>
-    <div class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-400">
-        <div class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
-            :class="data.locked ? 'bg-primary-200' : ''">
-            <ButtonComponent class="w-1/6 bg-red-400" :class="data.locked ? 'visible' : 'invisible'"
-                @click="socket.emit('automation/stopAutomation', data.automationPID)">
+    <div
+        class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-400"
+    >
+        <div
+            class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
+            :class="data.locked ? 'bg-primary-200' : ''"
+        >
+            <ButtonComponent
+                class="w-1/6 bg-red-400"
+                :class="data.locked ? 'visible' : 'invisible'"
+                @click="
+                    socket.emit('automation/stopAutomation', data.automationPID)
+                "
+            >
                 Stop
             </ButtonComponent>
-            <SelectComponent v-model:selected="data.targetName" :options="data.locoNames"
-                title="Select the train to control" @click="refreshNames()" />
+            <SelectComponent
+                v-model:selected="data.targetName"
+                :options="data.locoNames"
+                title="Select the train to control"
+                @click="refreshNames()"
+            />
             <div class="group z-0 flex h-full w-1/6 items-center justify-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="justify-self-end"
-                    :class="data.locked ? 'visible' : 'invisible'" viewBox="0 0 16 16">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="justify-self-end"
+                    :class="data.locked ? 'visible' : 'invisible'"
+                    viewBox="0 0 16 16"
+                >
                     <path
-                        d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+                        d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"
+                    />
                 </svg>
                 <div
-                    class="invisible absolute right-4 top-0 z-20 mr-1 mt-1 w-max rounded-lg border-2 bg-primary-600 p-1 text-sm text-white group-hover:visible">
+                    class="invisible absolute right-4 top-0 z-20 mr-1 mt-1 w-max rounded-lg border-2 bg-primary-600 p-1 text-sm text-white group-hover:visible"
+                >
                     {{ data.lockedReason }}
                 </div>
             </div>
         </div>
-        <div class="rounded-lg-b h-full w-full border-borderColor-400 p-2"
-            :class="data.locked ? 'bg-primary-200 opacity-40 border-t-2' : ''">
+        <div
+            class="rounded-lg-b h-full w-full border-borderColor-400 p-2"
+            :class="data.locked ? 'bg-primary-200 opacity-40 border-t-2' : ''"
+        >
             <div class="flex w-full flex-col items-center sm:flex-row">
                 <p class="w-1/12 select-none p-1 text-center">
                     {{ throttle.speed }}
                 </p>
-                <SliderComponent id="speedSlider" v-model:speed="throttle.speed" class="bg-inherit"
-                    :disabled="throttle.sliderDisabled || throttle.disabled" />
+                <SliderComponent
+                    id="speedSlider"
+                    v-model:speed="throttle.speed"
+                    class="bg-inherit"
+                    :disabled="throttle.sliderDisabled || throttle.disabled"
+                />
             </div>
             <div class="flex w-full flex-col space-y-2">
                 <div class="flex w-full grow flex-row space-x-2">
-                    <ButtonComponent class="basis-1/3" :class="data.forwardStyles" :disabled="throttle.disabled"
-                        @click="() => { if (!throttle.disabled) throttle.direction = Direction.forward }">
+                    <ButtonComponent
+                        class="basis-1/3"
+                        :class="data.forwardStyles"
+                        :disabled="throttle.disabled"
+                        @click="
+                            () => {
+                                if (!throttle.disabled)
+                                    throttle.direction = Direction.forward;
+                            }
+                        "
+                    >
                         Forward
                     </ButtonComponent>
-                    <ButtonComponent class="basis-1/3 bg-primary-400" :disabled="throttle.disabled"
-                        @click="throttle.speed = 0">
+                    <ButtonComponent
+                        class="basis-1/3 bg-primary-400"
+                        :disabled="throttle.disabled"
+                        @click="throttle.speed = 0"
+                    >
                         Stop
                     </ButtonComponent>
-                    <ButtonComponent class="basis-1/3" :class="data.reverseStyles" :disabled="throttle.disabled"
-                        @click="throttle.direction = Direction.reverse">
+                    <ButtonComponent
+                        class="basis-1/3"
+                        :class="data.reverseStyles"
+                        :disabled="throttle.disabled"
+                        @click="throttle.direction = Direction.reverse"
+                    >
                         Reverse
                     </ButtonComponent>
                 </div>
-                <ButtonComponent class="border-4" :class="data.stopStyles" :disabled="throttle.disabled"
-                    @click="throttle.direction = Direction.stopped">
+                <ButtonComponent
+                    class="border-4"
+                    :class="data.stopStyles"
+                    :disabled="throttle.disabled"
+                    @click="throttle.direction = Direction.stopped"
+                >
                     Emergency Stop
                 </ButtonComponent>
             </div>

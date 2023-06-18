@@ -1,6 +1,4 @@
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <button class="rounded p-1">
@@ -8,5 +6,4 @@
     </button>
 </template>
 
-<style>
-</style>
+<style></style>

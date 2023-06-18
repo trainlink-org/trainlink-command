@@ -1,23 +1,32 @@
 <!-- Connector component for the settings page -->
 <script setup lang="ts">
 // import { computed  } from 'vue';
-import { calculateCoord, calculateSize, calculateXCoord, calculateYCoord, type Coordinate } from './shared';
+import {
+    calculateCoord,
+    calculateSize,
+    calculateXCoord,
+    calculateYCoord,
+    type Coordinate,
+} from './shared';
 
 const props = defineProps({
-    start: {type: Object as () => Coordinate, required: true},
-    points: {type: Object as () => Coordinate[], required: true},
-    end: {type: Object as () => Coordinate, required: true},
-    activeRoute: {type: Boolean, required: true},
+    start: { type: Object as () => Coordinate, required: true },
+    points: { type: Object as () => Coordinate[], required: true },
+    end: { type: Object as () => Coordinate, required: true },
+    activeRoute: { type: Boolean, required: true },
 });
 const path = computed(() => {
-    let path = `M ${calculateXCoord(props.start.x)} ${calculateYCoord(props.start.y)}`;
-
+    let path = `M ${calculateXCoord(props.start.x)} ${calculateYCoord(
+        props.start.y
+    )}`;
 
     Array.from(props.points).forEach((point) => {
         const virtualPoint = calculateCoord(point);
         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
-    path =  `${path} L ${calculateXCoord(props.end.x)} ${calculateYCoord(props.end.y)}`;
+    path = `${path} L ${calculateXCoord(props.end.x)} ${calculateYCoord(
+        props.end.y
+    )}`;
     return path;
 });
 </script>

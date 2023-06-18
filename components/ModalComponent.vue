@@ -2,16 +2,15 @@
 // import ButtonComponent from './ButtonComponent.vue';
 
 const props = defineProps({
-    title: {type: String, required: true},
-    submitText: {type: String, required: false, default: 'Submit'},
-    cancelText: {type: String, required: false, default: 'Cancel'},
+    title: { type: String, required: true },
+    submitText: { type: String, required: false, default: 'Submit' },
+    cancelText: { type: String, required: false, default: 'Cancel' },
 });
 
 const emit = defineEmits<{
     (e: 'submit'): void;
     (e: 'cancel'): void;
 }>();
-
 </script>
 
 <template>
@@ -37,12 +36,10 @@ const emit = defineEmits<{
                     class="border-b-2 border-borderColor-300 w-full"
                 /> -->
                 <div class="p-1">
-                    <slot/>
+                    <slot />
                 </div>
             </div>
-            <div
-                class="flex justify-end space-x-1 p-1"
-            >
+            <div class="flex justify-end space-x-1 p-1">
                 <ButtonComponent
                     v-if="props.cancelText !== '_hidden_'"
                     class="border-2 border-primary-400 hover:bg-accent-100"
@@ -51,7 +48,7 @@ const emit = defineEmits<{
                     {{ props.cancelText }}
                 </ButtonComponent>
                 <ButtonComponent
-                    class="border-2 border-accent-400 bg-accent-400  hover:bg-accent-300"
+                    class="border-2 border-accent-400 bg-accent-400 hover:bg-accent-300"
                     @click="emit('submit')"
                 >
                     {{ props.submitText }}
