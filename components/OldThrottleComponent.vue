@@ -182,64 +182,76 @@ function refreshNames() {
     }
 }
 
-import { useLocoStore } from '@/stores/locos'
+// import { useLocoStore } from '@/stores/locos'
 
-const locoStore = useLocoStore();
+// const locoStore = useLocoStore();
 
-locoStore.definedLocos.set(0, {
-    name: 'Test1',
-    address: 0,
-    speed: 0,
-    direction: Direction.stopped,
-});
-locoStore.definedLocos.set(1, {
-    name: 'Test2',
-    address: 1,
-    speed: 0,
-    direction: Direction.stopped,
-});
+// locoStore.definedLocos.set(props.id, {
+//     name: 'Test',
+//     address: props.id,
+//     speed: 0,
+//     direction: Direction.stopped,
+// });
 
-locoStore.switchActiveThrottle(props.id, props.id)
+// locoStore.activeThrottles[0] = locoStore.definedLocos.get(0) || {
+//     name: 'Test',
+//     address: 0,
+//     speed: 0,
+//     direction: Direction.stopped,
+// };
+// locoStore.switchActiveThrottle(props.id, props.id)
 
-import { LocoClient } from 'stores/locos'
+// console.warn(locoStore.activeThrottles[0].name)
 
-const handler: ProxyHandler<LocoClient> = {
-    set(target, prop: keyof typeof target, value, reciever): boolean {
-        if (prop === 'speed') {
-            socket.emit('throttle/setSpeed', target.address, value, props.id)
-            // console.warn(`Speed set: ${value}`);
-        }
-        return Reflect.set(target, prop, value);
-    },
-};
-const activeThrottle = ref(locoStore.activeThrottles[props.id])
-const activeLoco: Ref<LocoClient> = ref(new Proxy(locoStore.activeThrottles[props.id], handler))
+// locoStore.activeThrottles[0].speed = 2;
+// locoStore.getActiveThrottle(0).direction = Direction.forward;
+// console.warn(locoStore.getActiveThrottle(0).direction)
+// locoStore.setSpeed(0, 10)
 
-function switchLoco(address: number) {
-    locoStore.switchActiveThrottle(props.id, address)
-    activeLoco.value = new Proxy(locoStore.activeThrottles[props.id], handler)
-}
+// watch(locoStore.activeThrottles[0].speed, (activeThrottles) => {
+//     // activeThrottles.forEach((loco) => {
+//     //     console.log(loco);
+//     // });
+//     console.warn('Changed!');
+// });
+// import { LocoInter } from 'stores/locos'
+// import { type } from 'os';
+// const handler: ProxyHandler<LocoInter> = {
+//     get(target, prop) {
+//         if (prop === 'name') {
+//             return 'Proxy';
+//         }
+//         return Reflect.get(target, prop);
+//     },
+//     set(target, prop: keyof typeof target, value, reciever): boolean {
+//         if (prop === 'speed') {
+//             console.warn(`Speed set: ${value}`);
+//             target.speed = value;
+//             return true;
+//         }
+//         return Reflect.set(target, prop, value);
+//     },
+// };
+// const activeThrottle: Ref<LocoInter> = ref(new Proxy(locoStore.activeThrottles[props.id], handler))
+// function switchLoco(address: number) {
+//     locoStore.switchActiveThrottle(props.id, address)
+//     activeThrottle.value = new Proxy(locoStore.activeThrottles[props.id], handler)
+// }
 
-socket.on('throttle/speedUpdate', (identifier, speed, socketId, throttleNum) => {
-    if (identifier === 'Train1') {
-        identifier = 1
-    }
-    if (typeof identifier === 'number' && socketId !== socket.id) {
-        const loco = locoStore.definedLocos.get(identifier)
-        if (loco) loco.speed = speed
-    }
-})
+// socket.on('throttle/speedUpdate', (identifier, speed) => {
+//     console.log(`Address: ${activeThrottle.value.address}`)
+//     if (identifier === 'Train1') {
+//         identifier = 1
+//     }
+//     console.log(`Identifier: ${identifier}`)
+//     if (typeof identifier === 'number' && identifier === activeThrottle.value.address) {
+//         console.log('Setting speed')
 
-
-const selectedLoco = ref('Select a Train')
-const locoOptions = ref(new Map<string, number>())
-watch(selectedLoco, (selectedLoco) => {
-    const address = locoOptions.value.get(selectedLoco);
-    if (address) {
-        locoStore.switchActiveThrottle(props.id, address)
-    }
-})
-
+//         // const loco = locoStore.act.get(identifier)
+//         // if (loco) loco.speed = speed
+//         locoStore.activeThrottles[props.id].speed = speed
+//     }
+// })
 </script>
 
 <template>
@@ -247,10 +259,6 @@ watch(selectedLoco, (selectedLoco) => {
     <!-- <ButtonComponent @click="locoStore.getActiveThrottle(0).speed += 1">Click Me!</ButtonComponent> -->
     <!-- {{ activeThrottle.speed }} -->
     <div class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-400">
-        {{ activeLoco.name }}
-        {{ activeLoco.speed }}
-        <ButtonComponent @click="activeLoco.speed++">Click Me Too!</ButtonComponent>
-        <ButtonComponent @click="switchLoco(activeLoco.address ? 0 : 1)">Switch</ButtonComponent>
         <div class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
             :class="data.locked ? 'bg-primary-200' : ''">
             <ButtonComponent class="w-1/6 bg-red-400" :class="data.locked ? 'visible' : 'invisible'" @click="
@@ -258,7 +266,7 @@ watch(selectedLoco, (selectedLoco) => {
                 ">
                 Stop
             </ButtonComponent>
-            <SelectComponent v-model:selected="selectedLoco" :options="Array.from(locoOptions.keys())"
+            <SelectComponent v-model:selected="data.targetName" :options="data.locoNames"
                 title="Select the train to control" @click="refreshNames()" />
             <div class="group z-0 flex h-full w-1/6 items-center justify-end">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="justify-self-end"
@@ -276,31 +284,31 @@ watch(selectedLoco, (selectedLoco) => {
             :class="data.locked ? 'bg-primary-200 opacity-40 border-t-2' : ''">
             <div class="flex w-full flex-col items-center sm:flex-row">
                 <p class="w-1/12 select-none p-1 text-center">
-                    {{ activeLoco.speed }}
+                    {{ throttle.speed }}
                 </p>
-                <SliderComponent id="speedSlider" v-model:speed="activeLoco.speed" class="bg-inherit"
+                <SliderComponent id="speedSlider" v-model:speed="throttle.speed" class="bg-inherit"
                     :disabled="throttle.sliderDisabled || throttle.disabled" />
             </div>
             <div class="flex w-full flex-col space-y-2">
                 <div class="flex w-full grow flex-row space-x-2">
                     <ButtonComponent class="basis-1/3" :class="data.forwardStyles" :disabled="throttle.disabled" @click="() => {
                         if (!throttle.disabled)
-                            activeLoco.direction = Direction.forward;
+                            throttle.direction = Direction.forward;
                     }
                         ">
                         Forward
                     </ButtonComponent>
                     <ButtonComponent class="basis-1/3 bg-primary-400" :disabled="throttle.disabled"
-                        @click="activeLoco.speed = 0">
+                        @click="throttle.speed = 0">
                         Stop
                     </ButtonComponent>
                     <ButtonComponent class="basis-1/3" :class="data.reverseStyles" :disabled="throttle.disabled"
-                        @click="activeLoco.direction = Direction.reverse">
+                        @click="throttle.direction = Direction.reverse">
                         Reverse
                     </ButtonComponent>
                 </div>
                 <ButtonComponent class="border-4" :class="data.stopStyles" :disabled="throttle.disabled"
-                    @click="activeLoco.direction = Direction.stopped">
+                    @click="throttle.direction = Direction.stopped">
                     Emergency Stop
                 </ButtonComponent>
             </div>
