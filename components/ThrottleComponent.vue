@@ -186,34 +186,22 @@ import { useLocoStore } from '@/stores/locos'
 
 const locoStore = useLocoStore();
 
-locoStore.definedLocos.set(0, {
-    name: 'Test1',
-    address: 0,
-    speed: 0,
-    direction: Direction.stopped,
-});
-locoStore.definedLocos.set(1, {
-    name: 'Test2',
-    address: 1,
-    speed: 0,
-    direction: Direction.stopped,
-});
-
-locoStore.switchActiveThrottle(props.id, props.id)
-
 import { LocoClient } from 'stores/locos'
 
 const handler: ProxyHandler<LocoClient> = {
     set(target, prop: keyof typeof target, value, reciever): boolean {
+        console.log('Handler')
         if (prop === 'speed') {
             socket.emit('throttle/setSpeed', target.address, value, props.id)
             // console.warn(`Speed set: ${value}`);
+        } else if (prop === 'direction') {
+            console.log('Direction update')
+            socket.emit('throttle/setDirection', target.address, value)
         }
         return Reflect.set(target, prop, value);
     },
 };
-const activeThrottle = ref(locoStore.activeThrottles[props.id])
-const activeLoco: Ref<LocoClient> = ref(new Proxy(locoStore.activeThrottles[props.id], handler))
+const activeLoco: Ref<LocoClient> = ref({ name: 'Select a Train', address: 0, speed: 0, direction: Direction.stopped })
 
 function switchLoco(address: number) {
     locoStore.switchActiveThrottle(props.id, address)
@@ -221,25 +209,48 @@ function switchLoco(address: number) {
 }
 
 socket.on('throttle/speedUpdate', (identifier, speed, socketId, throttleNum) => {
-    if (identifier === 'Train1') {
-        identifier = 1
-    }
+    // if (typeof identifier === 'string') {
+    //     const address = locoStore.addressFromName(identifier)
+    //     if (address !== undefined) {
+    //         identifier = address
+    //     }
+    // }
     if (typeof identifier === 'number' && socketId !== socket.id) {
         const loco = locoStore.definedLocos.get(identifier)
         if (loco) loco.speed = speed
     }
 })
-
-
-const selectedLoco = ref('Select a Train')
-const locoOptions = ref(new Map<string, number>())
-watch(selectedLoco, (selectedLoco) => {
-    const address = locoOptions.value.get(selectedLoco);
-    if (address) {
-        locoStore.switchActiveThrottle(props.id, address)
+socket.on('throttle/directionUpdate', (identifier, direction) => {
+    // if (typeof identifier === 'string') {
+    //     const address = locoStore.addressFromName(identifier)
+    //     if (address !== undefined) {
+    //         identifier = address
+    //     }
+    // }
+    if (typeof identifier === 'number') {
+        const loco = locoStore.definedLocos.get(identifier)
+        if (loco) loco.direction = direction
     }
 })
 
+
+const selectedLoco = ref('Select a Train')
+watch(selectedLoco, (selectedLoco) => {
+    console.log('Triggered')
+    const address = locoStore.addressFromName(selectedLoco);
+    console.log(address)
+    if (address !== undefined) {
+        // locoStore.switchActiveThrottle(props.id, address)
+        switchLoco(address)
+    }
+})
+
+const throttleStatus = {
+    locked: false,
+    lockedReason: '',
+    disabled: false,
+    sliderDisabled: false
+}
 </script>
 
 <template>
@@ -249,6 +260,7 @@ watch(selectedLoco, (selectedLoco) => {
     <div class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-400">
         {{ activeLoco.name }}
         {{ activeLoco.speed }}
+        {{ activeLoco.direction }}
         <ButtonComponent @click="activeLoco.speed++">Click Me Too!</ButtonComponent>
         <ButtonComponent @click="switchLoco(activeLoco.address ? 0 : 1)">Switch</ButtonComponent>
         <div class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
@@ -258,8 +270,8 @@ watch(selectedLoco, (selectedLoco) => {
                 ">
                 Stop
             </ButtonComponent>
-            <SelectComponent v-model:selected="selectedLoco" :options="Array.from(locoOptions.keys())"
-                title="Select the train to control" @click="refreshNames()" />
+            <SelectComponent v-model:selected="selectedLoco" :options="locoStore.locoNames"
+                title="Select the train to control" />
             <div class="group z-0 flex h-full w-1/6 items-center justify-end">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="justify-self-end"
                     :class="data.locked ? 'visible' : 'invisible'" viewBox="0 0 16 16">
@@ -268,7 +280,7 @@ watch(selectedLoco, (selectedLoco) => {
                 </svg>
                 <div
                     class="invisible absolute right-4 top-0 z-20 mr-1 mt-1 w-max rounded-lg border-2 bg-primary-600 p-1 text-sm text-white group-hover:visible">
-                    {{ data.lockedReason }}
+                    {{ throttleStatus.lockedReason }}
                 </div>
             </div>
         </div>
@@ -279,15 +291,16 @@ watch(selectedLoco, (selectedLoco) => {
                     {{ activeLoco.speed }}
                 </p>
                 <SliderComponent id="speedSlider" v-model:speed="activeLoco.speed" class="bg-inherit"
-                    :disabled="throttle.sliderDisabled || throttle.disabled" />
+                    :disabled="throttleStatus.sliderDisabled || throttleStatus.disabled" />
             </div>
             <div class="flex w-full flex-col space-y-2">
                 <div class="flex w-full grow flex-row space-x-2">
-                    <ButtonComponent class="basis-1/3" :class="data.forwardStyles" :disabled="throttle.disabled" @click="() => {
-                        if (!throttle.disabled)
-                            activeLoco.direction = Direction.forward;
-                    }
-                        ">
+                    <ButtonComponent class="basis-1/3" :class="data.forwardStyles" :disabled="throttleStatus.disabled"
+                        @click="() => {
+                            if (!throttleStatus.disabled)
+                                activeLoco.direction = Direction.forward;
+                        }
+                            ">
                         Forward
                     </ButtonComponent>
                     <ButtonComponent class="basis-1/3 bg-primary-400" :disabled="throttle.disabled"

@@ -3,8 +3,6 @@ import { Direction } from '@trainlink-org/shared-lib';
 import { RefSymbol } from '@vue/reactivity';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
-console.log('In Store file');
-
 export interface LocoClient {
     readonly name: string;
     readonly address: number;
@@ -21,6 +19,12 @@ export const useLocoStore = defineStore('locos', () => {
 
     const allLocos = computed(() => {
         return Array.from(definedLocos.value.values());
+    });
+
+    const locoNames = computed(() => {
+        return Array.from(definedLocos.value.values()).map((value) => {
+            return value.name;
+        });
     });
 
     function addLoco(loco: LocoClient) {
@@ -65,11 +69,17 @@ export const useLocoStore = defineStore('locos', () => {
         //     throttleId
         // );
     }
+    function addressFromName(name: string) {
+        return nameLookup.value.get(name);
+    }
 
     return {
+        nameLookup,
+        addressFromName,
         definedLocos,
         activeThrottles,
         allLocos,
+        locoNames,
         addLoco,
         removeLoco,
         setSpeed,
