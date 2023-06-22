@@ -8,6 +8,8 @@ export interface LocoClient {
     readonly address: number;
     speed: number;
     direction: Direction;
+    locked: boolean;
+    automationPID: string;
 }
 
 export const useLocoStore = defineStore('locos', () => {
@@ -72,6 +74,20 @@ export const useLocoStore = defineStore('locos', () => {
     function addressFromName(name: string) {
         return nameLookup.value.get(name);
     }
+    function lock(address: number, pid: string) {
+        const loco = definedLocos.value.get(address);
+        if (loco) {
+            loco.locked = true;
+            loco.automationPID = pid;
+        }
+    }
+    function unlock(address: number) {
+        const loco = definedLocos.value.get(address);
+        if (loco) {
+            loco.locked = false;
+            loco.automationPID = '';
+        }
+    }
 
     return {
         nameLookup,
@@ -84,6 +100,8 @@ export const useLocoStore = defineStore('locos', () => {
         removeLoco,
         setSpeed,
         switchActiveThrottle,
+        lock,
+        unlock,
     };
 });
 
