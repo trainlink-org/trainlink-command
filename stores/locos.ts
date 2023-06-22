@@ -47,6 +47,33 @@ export const useLocoStore = defineStore('locos', () => {
         }
     }
 
+    function updateLoco(oldAddress: number, name: string, newAddress: number) {
+        const loco = definedLocos.value.get(oldAddress);
+        if (loco) {
+            removeLoco(oldAddress);
+            addLoco({
+                name: name,
+                address: newAddress,
+                speed: loco.speed,
+                direction: loco.direction,
+                locked: loco.locked,
+                automationPID: loco.automationPID,
+            });
+        }
+    }
+
+    function getLoco(locoId: string | number) {
+        let address: number | undefined;
+        if (typeof locoId === 'string') {
+            address = nameLookup.value.get(locoId);
+        } else {
+            address = locoId;
+        }
+        if (address) {
+            return definedLocos.value.get(address);
+        } else return undefined;
+    }
+
     function switchActiveThrottle(throttleId: number, locoId: number) {
         activeThrottles.value.forEach((value) => {
             definedLocos.value.set(value.address, value);
@@ -86,6 +113,8 @@ export const useLocoStore = defineStore('locos', () => {
         switchActiveThrottle,
         lock,
         unlock,
+        getLoco,
+        updateLoco,
     };
 });
 

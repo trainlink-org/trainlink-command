@@ -1,5 +1,6 @@
 import { useLocoStore } from '~/stores/locos';
 import { Loco } from '@trainlink-org/shared-lib';
+import { JsxEmit } from 'typescript';
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);
@@ -47,5 +48,24 @@ export default function () {
             const loco = locoStore.definedLocos.get(identifier);
             if (loco) loco.direction = direction;
         }
+    });
+    socket.on('config/newLocoAdded', (loco) => {
+        const locoObject = Loco.fromJson(JSON.parse(loco));
+        locoStore.addLoco({
+            name: locoObject.name,
+            address: locoObject.address,
+            speed: locoObject.speed,
+            direction: locoObject.direction,
+            locked: false,
+            automationPID: '',
+        });
+    });
+
+    socket.on('config/locoEdited', (oldAddress, newAddress, name) => {
+        locoStore.updateLoco(oldAddress, name, newAddress);
+    });
+
+    socket.on('config/locoDeleted', (address) => {
+        locoStore.removeLoco(address);
     });
 }
