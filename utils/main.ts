@@ -18,7 +18,7 @@ import type {
 import type { DestinationState } from '../components/mapComponents/shared';
 
 export const trackPower = ref(false);
-export const store = reactive(new LocoStoreSocket(socket));
+// export const store = reactive(new LocoStoreSocket(socket));
 export const automationList: Map<number, AutomationScriptClient> = reactive(
     new Map()
 );

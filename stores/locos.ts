@@ -102,9 +102,7 @@ export const useLocoStore = defineStore('locos', () => {
     }
 
     return {
-        nameLookup,
         addressFromName,
-        definedLocos,
         activeThrottles,
         allLocos,
         locoNames,

@@ -212,7 +212,7 @@ function deleteLoco() {
                 <a class="cursor-pointer hover:underline" @click="selectedItems = []">Clear selected</a>
             </div>
             <ul>
-                <li v-for="loco in store.getAllLocos()" :key="loco.address" class="w-full pl-2 pr-3 hover:bg-accent-100">
+                <li v-for="loco in locoStore.allLocos" :key="loco.address" class="w-full pl-2 pr-3 hover:bg-accent-100">
                     <div class="group grid w-full grid-flow-row grid-cols-5 grid-rows-2">
                         <p class="col-span-4 lg:text-lg">
                             {{ loco.name }}
