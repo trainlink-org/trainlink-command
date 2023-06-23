@@ -3,9 +3,13 @@
 // import { useRouter } from 'vue-router';
 // import ModalComponent from '../ModalComponent.vue';
 
-import { store } from '@/utils/main';
+// import { store } from '@/utils/main';
 // import { reactive, ref, type Ref } from 'vue';
 import { socket } from '@/utils/socketHelper';
+import { useLocoStore } from '@/stores/locos';
+import { LocoClient } from '@/stores/locos';
+
+const locoStore = useLocoStore();
 
 const router = useRouter();
 
@@ -52,35 +56,25 @@ function openAddLoco() {
 function openEditLoco(address: number) {
     editError.name = false;
     editError.address = false;
-    store
-        .getLoco(address)
-        .then((loco) => {
-            currentlyEditing.name = loco.name;
-            currentlyEditing.address = loco.address;
-            modalValues.name = loco.name;
-            modalValues.address = loco.address.toString();
-            editOpen.value = true;
-        })
-        .catch();
+    const loco = locoStore.getLoco(address);
+    if (loco) {
+        currentlyEditing.name = loco.name;
+        currentlyEditing.address = loco.address;
+        modalValues.name = loco.name;
+        modalValues.address = loco.address.toString();
+        editOpen.value = true;
+    }
 }
 
 function openDeleteLoco(addresses: number[]) {
     if (addresses.length === 1) {
-        store
-            .getLoco(addresses[0])
-            .then((loco) => {
-                deleteText.value = `Are you sure you want to delete "${loco?.name}"?`;
-            })
-            .catch();
+        const loco = locoStore.getLoco(addresses[0]);
+        deleteText.value = `Are you sure you want to delete "${loco?.name}"?`;
     } else {
         let locoList = '';
         addresses.forEach((address) => {
-            store
-                .getLoco(address)
-                .then((loco) => {
-                    locoList += `\n${loco?.name} (${loco?.address})`;
-                })
-                .catch();
+            const loco = locoStore.getLoco(address);
+            locoList += `\n${loco?.name} (${loco?.address})`;
         });
         deleteText.value = `Are you sure you want to delete the ${addresses.length} following locomotives?${locoList}`;
     }
@@ -89,8 +83,12 @@ function openDeleteLoco(addresses: number[]) {
 
 async function addLoco() {
     const locoAddress = Number(modalValues.address);
-    store
-        .getLoco(modalValues.name)
+    new Promise<void>((resolve, reject) => {
+        const loco = locoStore.getLoco(modalValues.name);
+        console.log(loco);
+        if (loco) resolve();
+        else reject();
+    })
         .then(() => {
             addError.nameMsg = 'Name is already used';
             addError.name = true;
@@ -110,8 +108,11 @@ async function addLoco() {
                 addError.address = true;
             } else {
                 addError.address = false;
-                store
-                    .getLoco(locoAddress)
+                new Promise<void>((resolve, reject) => {
+                    const loco = locoStore.getLoco(locoAddress);
+                    if (loco) resolve();
+                    else reject();
+                })
                     .then(() => {
                         addError.addressMsg = 'Address is already in use';
                         addError.address = true;
@@ -133,8 +134,11 @@ async function editLoco() {
     const locoAddress = Number(modalValues.address);
     new Promise<void>((resolve) => {
         if (modalValues.name !== currentlyEditing.name) {
-            store
-                .getLoco(modalValues.name)
+            new Promise<void>((resolve, reject) => {
+                const loco = locoStore.getLoco(modalValues.name);
+                if (loco) resolve();
+                else reject();
+            })
                 .then(() => {
                     editError.nameMsg = 'Name is already used';
                     editError.name = true;
@@ -157,8 +161,11 @@ async function editLoco() {
             } else if (
                 modalValues.address !== String(currentlyEditing.address)
             ) {
-                store
-                    .getLoco(locoAddress)
+                new Promise<void>((resolve, reject) => {
+                    const loco = locoStore.getLoco(locoAddress);
+                    if (loco) resolve();
+                    else reject();
+                })
                     .then(() => {
                         editError.addressMsg = 'Address is already in use';
                         editError.address = true;
@@ -214,7 +221,7 @@ function deleteLoco() {
             </div>
             <ul>
                 <li
-                    v-for="loco in store.getAllLocos()"
+                    v-for="loco in locoStore.allLocos"
                     :key="loco.address"
                     class="w-full pl-2 pr-3 hover:bg-accent-100"
                 >

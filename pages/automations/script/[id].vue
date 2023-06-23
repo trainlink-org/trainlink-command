@@ -1,12 +1,14 @@
 <!-- Displays a non-running script on the Automations page -->
 <script setup lang="ts">
-import { automationList, allocatedLocos, store } from '@/utils/main';
+import { automationList, allocatedLocos } from '@/utils/main';
 // import { ref, watch, computed } from 'vue';
 // import { useRoute, useRouter } from 'vue-router';
 import { socket } from '@/utils/socketHelper';
-import { AutomationType } from '@trainlink-org/shared-lib';
+import { AutomationType } from '@trainlink-org/trainlink-types';
+import { useLocoStore } from '~/stores/locos';
 
 // import SelectComponent from '@/components/SelectComponent.vue';
+const locoStore = useLocoStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -37,7 +39,7 @@ const editDescription = ref(false);
 
 const allocateLocoOpen = ref(true);
 const availableLocos = computed(() => {
-    return Array.from(store.getAllLocos())
+    return locoStore.allLocos
         .filter((value) => {
             const allocatedPID = allocatedLocos.value.get(value.address);
             return allocatedPID === undefined;

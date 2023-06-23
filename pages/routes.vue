@@ -13,7 +13,7 @@ import {
 // import DestinationComponent from '../components/mapComponents/DestinationComponent.vue';
 
 import { turnoutLinks, turnouts, destinations } from '@/utils/main';
-import { TurnoutState, type Destination } from '@trainlink-org/shared-lib';
+import { TurnoutState, type Destination } from '@trainlink-org/trainlink-types';
 import { socket } from '@/utils/socketHelper';
 
 import { usedLinks, usedTurnouts, destinationStates } from '@/utils/main';

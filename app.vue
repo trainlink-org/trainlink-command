@@ -1,9 +1,6 @@
 <script setup lang="ts">
-// import { RouterView } from 'vue-router';
-
-// import NavComponent  from './components/NavComponent.vue';
-
 import { connected } from './utils/main';
+useSocket();
 </script>
 
 <template>

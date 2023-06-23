@@ -7,13 +7,15 @@ import {
     AutomationType,
     type RunningAutomationClient,
     AutomationStatus,
-} from '@trainlink-org/shared-lib';
+} from '@trainlink-org/trainlink-types';
 import {
     allocatedLocos,
     automationList,
     runningAutomations,
-    store,
 } from '@/utils/main';
+
+import { useLocoStore } from '~/stores/locos';
+const locoStore = useLocoStore();
 // import ModalComponent from '../components/ModalComponent.vue';
 // import SelectComponent from '../components/SelectComponent.vue';
 
@@ -76,7 +78,8 @@ function clearFileInput() {
 const allocateLocoOpen = ref(false);
 const allocateLocoSelect = ref('Select a Train');
 const availableLocos = computed(() => {
-    return Array.from(store.getAllLocos())
+    // return Array.from(store.getAllLocos())
+    return locoStore.allLocos
         .filter((value) => {
             const allocatedPID = allocatedLocos.value.get(value.address);
             return allocatedPID === undefined;
@@ -479,7 +482,7 @@ const testString = ref('');
             class="h-5/6 w-11/12 rounded-lg border-4 md:w-4/6"
         >
             <RouterView
-                @select-loco=" (id: number, type: AutomationType) => selectLoco(id, type) "
+                @select-loco="(id: number, type: AutomationType) => selectLoco(id, type)"
             />
         </div>
         <div

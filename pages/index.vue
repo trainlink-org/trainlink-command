@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocoStore } from '~/stores/locos';
+
 // import { reactive } from 'vue';
 // import ThrottleComponent from '../components/ThrottleComponent.vue';
 
@@ -60,6 +62,7 @@ function throttleSelector(targetThrottle: number) {
         });
     }
 }
+const locoStore = useLocoStore();
 
 // const returnPath = route.params.prev ? `/${route.params.prev}` : '';
 </script>
@@ -103,13 +106,13 @@ function throttleSelector(targetThrottle: number) {
                 class="w-1/2 rounded-l-md border-4 border-r-2 border-accent-200 text-center hover:bg-accent-200"
                 :class="throttleState.spanClasses[0]"
                 @click="throttleSelector(0)"
-                v-text="throttleState.throttleNames[0]"
+                v-text="locoStore.activeThrottles[0]?.name || 'Empty'"
             />
             <span
                 class="w-1/2 rounded-r-md border-4 border-l-2 border-accent-200 text-center hover:bg-accent-200"
                 :class="throttleState.spanClasses[1]"
                 @click="throttleSelector(1)"
-                v-text="throttleState.throttleNames[1]"
+                v-text="locoStore.activeThrottles[1]?.name || 'Empty'"
             />
         </div>
     </div>

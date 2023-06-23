@@ -19,7 +19,7 @@ import {
     type Coordinate,
     type Destination,
     type Turnout,
-} from '@trainlink-org/shared-lib';
+} from '@trainlink-org/trainlink-types';
 // import ConnectorHandleComponent from '../mapComponents/ConnectorHandleComponent.vue';
 // import { useRouter } from 'vue-router';
 // import ModalComponent from '../ModalComponent.vue';

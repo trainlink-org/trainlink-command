@@ -12,14 +12,14 @@ import type {
     ServerToClientEvents,
     ClientToServerEvents,
 } from '@trainlink-org/trainlink-types';
-import { Loco } from '@trainlink-org/shared-lib';
+import { Loco } from '@trainlink-org/trainlink-types';
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
     typeof window !== 'undefined'
         ? io('http://' + window.location.hostname + ':6868')
         : io('http://localhost:6868');
 
-import { store } from './main';
+// import { store } from './main';
 
 socket.on('connect', () => {
     connected.value = true;
@@ -40,12 +40,12 @@ socket.on('metadata/handshake', (name, serverVersion) => {
     version.serverVersion = serverVersion;
 });
 
-socket.on('metadata/initialState/locos', async (locosState) => {
-    console.log('Initial state received');
-    await loadState(locosState);
-    store.triggerLoaded();
-    console.log(store.toString());
-});
+// socket.on('metadata/initialState/locos', async (locosState) => {
+//     console.log('Initial state received');
+//     await loadState(locosState);
+//     store.triggerLoaded();
+//     console.log(store.toString());
+// });
 
 socket.on('metadata/initialState/turnouts', (packet) => {
     packet.links.forEach((value) => {
@@ -64,16 +64,16 @@ socket.on('metadata/initialState/trackPower', (state) => {
     trackPower.value = state;
 });
 
-function loadState(locosState: string[]) {
-    return new Promise<void>((resolve) => {
-        for (const locoString of locosState) {
-            const loco = Loco.fromJson(JSON.parse(locoString));
-            store.add(loco);
-            console.log('Added to store');
-        }
-        resolve();
-    });
-}
+// function loadState(locosState: string[]) {
+//     return new Promise<void>((resolve) => {
+//         for (const locoString of locosState) {
+//             const loco = Loco.fromJson(JSON.parse(locoString));
+//             store.add(loco);
+//             console.log('Added to store');
+//         }
+//         resolve();
+//     });
+// }
 
 import { automationList, runningAutomations, allocatedLocos } from './main';
 import type {
@@ -137,20 +137,20 @@ socket.on('routes/unsetRouteComponents', (destinations, turnouts, links) => {
     });
 });
 
-socket.on('config/newLocoAdded', (loco) => {
-    store.add(Loco.fromJson(JSON.parse(loco)));
-    console.log(store.toString());
-});
+// socket.on('config/newLocoAdded', (loco) => {
+//     store.add(Loco.fromJson(JSON.parse(loco)));
+//     console.log(store.toString());
+// });
 
-socket.on('config/locoEdited', (oldAddress, newAddress, name) => {
-    store.updateLoco(oldAddress, name, newAddress);
-    console.log(store.toString());
-});
+// socket.on('config/locoEdited', (oldAddress, newAddress, name) => {
+//     store.updateLoco(oldAddress, name, newAddress);
+//     console.log(store.toString());
+// });
 
-socket.on('config/locoDeleted', (address) => {
-    store.deleteLoco(address);
-    console.log(store.toString());
-});
+// socket.on('config/locoDeleted', (address) => {
+//     store.deleteLoco(address);
+//     console.log(store.toString());
+// });
 
 socket.on('throttle/trackPowerUpdate', (state, socketId) => {
     if (socketId !== socket.id) {
