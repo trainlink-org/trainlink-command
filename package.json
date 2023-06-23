@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",
-    "@trainlink-org/shared-lib": "^0.0.1-alpha.2",
+    "@trainlink-org/trainlink-types": "^0.0.1-alpha.5",
     "pinia": "^2.1.4",
     "socket.io-client": "^4.6.2"
   },

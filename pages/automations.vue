@@ -7,7 +7,7 @@ import {
     AutomationType,
     type RunningAutomationClient,
     AutomationStatus,
-} from '@trainlink-org/shared-lib';
+} from '@trainlink-org/trainlink-types';
 import {
     allocatedLocos,
     automationList,

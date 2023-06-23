@@ -19,7 +19,7 @@ import {
     type Coordinate,
     type Destination,
     type Turnout,
-} from '@trainlink-org/shared-lib';
+} from '@trainlink-org/trainlink-types';
 // import ConnectorHandleComponent from '../mapComponents/ConnectorHandleComponent.vue';
 // import { useRouter } from 'vue-router';
 // import ModalComponent from '../ModalComponent.vue';
@@ -416,186 +416,116 @@ function discardChanges() {
     <div class="flex h-full w-full flex-col">
         <svg id="mapSvg" ref="box" class="h-full w-full" :viewBox="viewBox">
             <!-- From saved map -->
-            <ConnectorComponentSettings
-                v-for="link in turnoutLinks.values()"
-                :key="link.id"
-                :start="
-                    addCoords(
-                        turnouts.get(link.start)?.coordinate ||
-                            destinations.get(link.start)?.coordinate || {
-                                x: -5,
-                                y: -5,
-                            },
-                        calculateCoordInverse(
-                            linkStartOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
+            <ConnectorComponentSettings v-for="link in turnoutLinks.values()" :key="link.id" :start="addCoords(
+                turnouts.get(link.start)?.coordinate ||
+                destinations.get(link.start)?.coordinate || {
+                    x: -5,
+                    y: -5,
+                },
+                calculateCoordInverse(
+                    linkStartOffsets.get(link.id) || { x: 0, y: 0 }
+                )
+            )
+                " :points="applyPointOffsets(link.points)" :end="addCoords(
+        turnouts.get(link.end)?.coordinate || { x: -5, y: -5 },
+        calculateCoordInverse(
+            linkEndOffsets.get(link.id) || { x: 0, y: 0 }
+        )
+    )
+        " :active-route="false" />
+            <TurnoutComponent v-for="turnout in turnouts.values()" :key="turnout.id" :coordinate="{
+                x:
+                    turnout.coordinate.x +
+                    calculateXCoordInverse(offsets.get(turnout.id)?.x || 0),
+                y:
+                    turnout.coordinate.y +
+                    calculateYCoordInverse(offsets.get(turnout.id)?.y || 0),
+            }" :active-route="false" :title="turnout.name" :class="!lineEditMode
+        ? beingMoved === turnout.id
+            ? 'cursor-grabbing'
+            : 'cursor-grab'
+        : newLineStart === turnout.id
+            ? 'fill-red-500'
+            : 'fill-black'
+    " @mousedown="(event: MouseEvent) => lineEditMode ? createLine(turnout.id) : drag(turnout.id, event)"
+                @mouseup="(event: MouseEvent) => { if (!lineEditMode) drop() }" />
+            <DestinationComponent v-for="destination in destinations.values()" :key="destination.id"
+                :state="DestinationState.inactive" :title="destination.name" :coordinate="addCoords(
+                    destination.coordinate,
+                    calculateCoordInverse(
+                        offsets.get(destination.id) || { x: 0, y: 0 }
                     )
-                "
-                :points="applyPointOffsets(link.points)"
-                :end="
-                    addCoords(
-                        turnouts.get(link.end)?.coordinate || { x: -5, y: -5 },
-                        calculateCoordInverse(
-                            linkEndOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
-                    )
-                "
-                :active-route="false"
-            />
-            <TurnoutComponent
-                v-for="turnout in turnouts.values()"
-                :key="turnout.id"
-                :coordinate="{
-                    x:
-                        turnout.coordinate.x +
-                        calculateXCoordInverse(offsets.get(turnout.id)?.x || 0),
-                    y:
-                        turnout.coordinate.y +
-                        calculateYCoordInverse(offsets.get(turnout.id)?.y || 0),
-                }"
-                :active-route="false"
-                :title="turnout.name"
-                :class="
-                    !lineEditMode
-                        ? beingMoved === turnout.id
-                            ? 'cursor-grabbing'
-                            : 'cursor-grab'
-                        : newLineStart === turnout.id
-                        ? 'fill-red-500'
-                        : 'fill-black'
-                "
-                @mousedown="(event: MouseEvent) => lineEditMode ? createLine(turnout.id) : drag(turnout.id, event)"
-                @mouseup="(event: MouseEvent) => { if (!lineEditMode) drop() }"
-            />
-            <DestinationComponent
-                v-for="destination in destinations.values()"
-                :key="destination.id"
-                :state="DestinationState.inactive"
-                :title="destination.name"
-                :coordinate="
-                    addCoords(
-                        destination.coordinate,
-                        calculateCoordInverse(
-                            offsets.get(destination.id) || { x: 0, y: 0 }
-                        )
-                    )
-                "
-                :class="
-                    beingMoved === destination.id
-                        ? 'cursor-grabbing'
-                        : 'cursor-grab'
-                "
-                @mousedown="(event: MouseEvent) => drag(destination.id, event)"
-                @mouseup="drop"
-            />
-            <ConnectorHandleComponent
-                v-for="point in points"
-                :key="point.id"
-                :point="
-                    addCoords(
-                        point.coord,
-                        calculateCoordInverse(
-                            pointOffsets.get(point.id) || { x: 0, y: 0 }
-                        )
-                    )
-                "
-                @mousedown="(event: MouseEvent) => dragPoint(point.id, event)"
-                @mouseup="dropPoint"
-            />
+                )
+                    " :class="beingMoved === destination.id
+            ? 'cursor-grabbing'
+            : 'cursor-grab'
+        " @mousedown="(event: MouseEvent) => drag(destination.id, event)" @mouseup="drop" />
+            <ConnectorHandleComponent v-for="point in points" :key="point.id" :point="addCoords(
+                point.coord,
+                calculateCoordInverse(
+                    pointOffsets.get(point.id) || { x: 0, y: 0 }
+                )
+            )
+                " @mousedown="(event: MouseEvent) => dragPoint(point.id, event)" @mouseup="dropPoint" />
         </svg>
-        <div
-            class="relative flex w-full items-center justify-around border-t-2 border-primary-300 py-1"
-        >
+        <div class="relative flex w-full items-center justify-around border-t-2 border-primary-300 py-1">
             <!-- Back Icon -->
             <button
                 class="group flex h-7 w-2/12 items-center rounded-full hover:bg-accent-200 active:bg-accent-400 md:hidden"
-                @click="router.push('/settings')"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    class="h-8 w-full group-hover:fill-accent-400"
-                    viewBox="0 0 16 16"
-                >
-                    <path
-                        fill-rule="evenodd"
-                        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"
-                    />
+                @click="router.push('/settings')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-8 w-full group-hover:fill-accent-400"
+                    viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
                 </svg>
             </button>
             <!-- Add Icon -->
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-green-400 md:w-1/6"
-                @click="addModalOpen = true"
-            >
+                @click="addModalOpen = true">
                 <!-- Boostrap icons: plus -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="h-7 group-hover:fill-green-400"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"
+                    class="h-7 group-hover:fill-green-400">
                     <path
-                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                    />
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                 </svg>
                 Add Items
             </button>
             <!-- Edit Icon -->
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-green-400 md:w-1/6"
-                :class="!lineEditMode ? 'bg-inherit' : 'bg-accent-400'"
-                @click="lineEditMode = !lineEditMode"
-            >
+                :class="!lineEditMode ? 'bg-inherit' : 'bg-accent-400'" @click="lineEditMode = !lineEditMode">
                 <!-- Bootstrap icons: pencil-square -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="-4 -4 20 20"
-                    class="h-7 group-hover:fill-green-400"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="-4 -4 20 20"
+                    class="h-7 group-hover:fill-green-400">
                     <path
-                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-                    />
-                    <path
-                        fill-rule="evenodd"
-                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                    />
+                        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path fill-rule="evenodd"
+                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
                 </svg>
                 Edit lines
             </button>
             <!-- Delete Icon -->
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-red-400 md:w-1/6"
-                :class="deleteMode ? 'bg-red-400' : 'bg-inherit'"
-                @click="deleteMode = !deleteMode"
-            >
+                :class="deleteMode ? 'bg-red-400' : 'bg-inherit'" @click="deleteMode = !deleteMode">
                 <!-- Bootstrap icons: trash-fill -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    class="h-5 group-hover:fill-red-500"
-                    viewBox="0 0 16 16"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-5 group-hover:fill-red-500"
+                    viewBox="0 0 16 16">
                     <path
-                        d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"
-                    />
+                        d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
                 </svg>
                 Delete Items
             </button>
 
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-red-400 md:w-1/6"
-                :class="changesMade ? 'visible' : 'hidden'"
-                @click="saveChanges"
-            >
+                :class="changesMade ? 'visible' : 'hidden'" @click="saveChanges">
                 Save changes
             </button>
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-red-400 md:w-1/6"
-                :class="changesMade ? 'visible' : 'hidden'"
-                @click="discardChanges"
-            >
+                :class="changesMade ? 'visible' : 'hidden'" @click="discardChanges">
                 Discard changes
             </button>
 
@@ -603,37 +533,22 @@ function discardChanges() {
         </div>
     </div>
 
-    <ModalComponent
-        v-if="addModalOpen"
-        title="Add Item"
-        submit-text="Add"
-        @submit="addToMap"
-        @cancel="addModalOpen = false"
-    >
+    <ModalComponent v-if="addModalOpen" title="Add Item" submit-text="Add" @submit="addToMap"
+        @cancel="addModalOpen = false">
         <div class="flex h-20 w-full justify-around">
-            <div
-                class="flex h-full w-1/3 flex-col border border-black"
-                :class="
-                    addModalSelected === AddModalType.Destination
-                        ? 'bg-accent-400'
-                        : 'bg-inherit'
-                "
-                @click="addModalSelected = AddModalType.Destination"
-            >
+            <div class="flex h-full w-1/3 flex-col border border-black" :class="addModalSelected === AddModalType.Destination
+                    ? 'bg-accent-400'
+                    : 'bg-inherit'
+                " @click="addModalSelected = AddModalType.Destination">
                 <svg class="h-full w-fit" viewBox="0 0 10 10">
                     <rect width="5" height="5" x="2.5" y="2.5" />
                 </svg>
                 Destination
             </div>
-            <div
-                class="flex h-full w-1/3 flex-col border border-black"
-                :class="
-                    addModalSelected === AddModalType.Point
-                        ? 'bg-accent-400'
-                        : 'bg-inherit'
-                "
-                @click="addModalSelected = AddModalType.Point"
-            >
+            <div class="flex h-full w-1/3 flex-col border border-black" :class="addModalSelected === AddModalType.Point
+                    ? 'bg-accent-400'
+                    : 'bg-inherit'
+                " @click="addModalSelected = AddModalType.Point">
                 <svg class="h-full w-fit" viewBox="0 0 10 10">
                     <circle r="2.5" cx="5" cy="5" />
                 </svg>
@@ -641,34 +556,20 @@ function discardChanges() {
             </div>
         </div>
 
-        <div
-            class="grid h-full w-full grid-flow-row grid-cols-2 grid-rows-4 gap-y-1 pt-5 sm:grid-cols-3 sm:grid-rows-2"
-        >
+        <div class="grid h-full w-full grid-flow-row grid-cols-2 grid-rows-4 gap-y-1 pt-5 sm:grid-cols-3 sm:grid-rows-2">
             <p class="col-span-2 sm:col-span-1">Name:</p>
             <div class="col-span-2">
-                <input
-                    v-model="addModalValues.name"
-                    type="text"
-                    class="w-full rounded border-2 border-primary-400 invalid:border-red-600"
-                />
-                <p
-                    class="text-red-600"
-                    :class="addError.name ? 'visible' : 'invisible'"
-                >
+                <input v-model="addModalValues.name" type="text"
+                    class="w-full rounded border-2 border-primary-400 invalid:border-red-600" />
+                <p class="text-red-600" :class="addError.name ? 'visible' : 'invisible'">
                     {{ addError.nameMsg }}
                 </p>
             </div>
             <p class="col-span-2 sm:col-span-1">Address:</p>
             <div class="col-span-2">
-                <input
-                    v-model="addModalValues.id"
-                    type="text"
-                    class="w-full rounded border-2 border-primary-400 invalid:border-red-600"
-                />
-                <p
-                    class="text-red-600"
-                    :class="addError.id ? 'visible' : 'invisible'"
-                >
+                <input v-model="addModalValues.id" type="text"
+                    class="w-full rounded border-2 border-primary-400 invalid:border-red-600" />
+                <p class="text-red-600" :class="addError.id ? 'visible' : 'invisible'">
                     {{ addError.idMsg }}
                 </p>
             </div>

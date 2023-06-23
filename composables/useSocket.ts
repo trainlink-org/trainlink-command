@@ -1,5 +1,5 @@
 import { useLocoStore } from '~/stores/locos';
-import { Loco } from '@trainlink-org/shared-lib';
+import { Loco } from '@trainlink-org/trainlink-types';
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);

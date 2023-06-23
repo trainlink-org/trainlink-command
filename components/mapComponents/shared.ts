@@ -1,6 +1,6 @@
 // import { ref } from 'vue';
 import { turnouts, turnoutLinks } from '@/utils/main';
-import { TurnoutState } from '@trainlink-org/shared-lib';
+import { TurnoutState } from '@trainlink-org/trainlink-types';
 
 export const isTouchScreen = ref(false);
 export const svgWidth = ref(100);
