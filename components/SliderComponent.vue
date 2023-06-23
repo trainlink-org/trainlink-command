@@ -22,7 +22,14 @@ const value = computed({
 </script>
 
 <template>
-    <input v-model="value" class="slider" type="range" min="0" max="126" :disabled="props.disabled" />
+    <input
+        v-model="value"
+        class="slider"
+        type="range"
+        min="0"
+        max="126"
+        :disabled="props.disabled"
+    />
 </template>
 
 <style scoped>
@@ -140,4 +147,5 @@ const value = computed({
 
 .slider:focus::-ms-fill-upper {
     background: #b6b6b6;
-}</style>
+}
+</style>
