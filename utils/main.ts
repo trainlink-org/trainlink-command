@@ -2,8 +2,6 @@
 // import App from './App.vue';
 // import router from './router';
 
-import { LocoStoreSocket } from './lib/locoStoreClient';
-
 import { socket } from './socketHelper';
 // import type { AutomationScriptClient, Destination, PID, RunningAutomationClient, Turnout, TurnoutLink, RouteObject } from './shared';
 import type {

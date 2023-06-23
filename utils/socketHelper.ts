@@ -12,7 +12,7 @@ import type {
     ServerToClientEvents,
     ClientToServerEvents,
 } from '@trainlink-org/trainlink-types';
-import { Loco } from '@trainlink-org/shared-lib';
+import { Loco } from '@trainlink-org/trainlink-types';
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
     typeof window !== 'undefined'

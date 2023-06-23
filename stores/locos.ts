@@ -1,4 +1,4 @@
-// import { Loco } from '@trainlink-org/shared-lib';
+// import { Loco } from '@trainlink-org/trainlink-types';
 import { Direction } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
