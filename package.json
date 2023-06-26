@@ -1,6 +1,8 @@
 {
   "name": "nuxt-app",
-  "private": true,
+  "version": "0.0.0-alpha.0",
+  "author": "TrainLink Organisation",
+  "description": "A web and desktop throttle for DCC model railways",
   "scripts": {
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
