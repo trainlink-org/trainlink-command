@@ -3,33 +3,46 @@
  */
 {
   "appId": "org.trainlink.command",
-  "asar": false,
+  "asar": true,
   "productName": "TrainLink Command",
+  "removePackageScripts": true,
+
+  "nodeGypRebuild": false,
+  "buildDependenciesFromSource": false,
   "directories": {
     "output": "release/${version}"
+    // "output": "electron-dist"
   },
-  // "files": [".output/**/*", "dist-electron", "node_modules/*"],
-  "files": "**/*",
+  "files": ["**/*", "!dist${/*}"],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "target": ["dmg"]
+    "target": ["dmg"],
+    "category": "public.app-category.utilities"
   },
   "win": {
+    "artifactName": "${productName}_${version}.${ext}",
     "target": [
       {
         "target": "nsis",
         "arch": ["x64"]
       }
-    ],
-    "artifactName": "${productName}_${version}.${ext}"
+    ]
   },
   "linux": {
-    // "target": ["AppImage"]
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["AppImage", "flatpak", "rpm", "deb"],
+    "desktop": {
+      "StartupNotify": false
+    }
   },
   "nsis": {
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
+  },
+  "flatpak": {
+    "runtimeVersion": "22.08",
+    "baseVersion": "22.08"
   }
 }
