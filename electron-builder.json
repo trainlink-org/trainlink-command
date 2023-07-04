@@ -11,7 +11,6 @@
   "buildDependenciesFromSource": false,
   "directories": {
     "output": "release/${version}"
-    // "output": "electron-dist"
   },
   "files": ["**/*", "!dist${/*}"],
   "mac": {

@@ -39,7 +39,7 @@ function createWindow() {
         // frame: platform === 'darwin',
         frame: true, // <= Remove this line if you wanted to implement your own title bar
         titleBarOverlay: platform === 'darwin' && { height: headerSize },
-        title: 'electron-nuxt3',
+        title: 'TrainLink Command' + (isProduction !== false ? '(Dev)' : ''),
     });
 
     // Lock app to single instance
@@ -105,6 +105,6 @@ app.on('window-all-closed', () => {
 const serverConfig: ServerConfig = {
     port: 6868,
     productName: 'TrainLink Connect (Integrated Server)',
-    configPath: app.getPath('userData'),
+    configPath: isProduction ? app.getPath('userData') : './release',
 };
 startServer(serverConfig);
