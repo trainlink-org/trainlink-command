@@ -15,11 +15,11 @@ const emit = defineEmits<{
 
 <template>
     <div
-        class="absolute top-0 left-0 z-20 h-screen w-screen bg-black opacity-25"
+        class="fixed top-0 -left-2 z-20 h-screen w-screen bg-black opacity-25"
         @click="emit('cancel')"
     />
     <div
-        class="absolute top-0 left-0 z-30 flex h-screen w-screen items-center justify-center bg-transparent"
+        class="fixed top-0 -left-2 z-30 flex h-screen w-screen items-center justify-center bg-transparent"
         @click="emit('cancel')"
     >
         <div

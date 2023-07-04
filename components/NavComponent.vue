@@ -57,27 +57,7 @@ const configStore = useConfigStore();
         />
     </div>
     <div class="absolute right-0 top-0 flex flex-row space-x-2 items-center">
-        <div class="group cursor-pointer">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="30"
-                height="30"
-                fill="default"
-                viewBox="0 0 16 16"
-            >
-                <path
-                    d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-8zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-11z"
-                />
-            </svg>
-            <div
-                class="absolute right-8 top-10 border-4 rounded-lg mt-1 flex flex-col items-center text-center group-hover:visible invisible bg-white"
-            >
-                <p class="text-xl border-b-2 px-6 pt-2">Connected</p>
-                <p class="px-2 pb-2">
-                    Connected to {{ configStore.driverName }} driver
-                </p>
-            </div>
-        </div>
+        <ConnectedIconComponent />
         <!-- <RouterLink class="absolute right-0 top-0" to="/settings"> -->
         <RouterLink to="/settings">
             <img
