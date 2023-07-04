@@ -1,0 +1,47 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "appId": "org.trainlink.command",
+  "asar": true,
+  "productName": "TrainLink Command",
+  "removePackageScripts": true,
+
+  "nodeGypRebuild": false,
+  "buildDependenciesFromSource": false,
+  "directories": {
+    "output": "release/${version}"
+  },
+  "files": ["**/*", "!dist${/*}"],
+  "mac": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["dmg"],
+    "category": "public.app-category.utilities"
+  },
+  "win": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ]
+  },
+  "linux": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["AppImage", "flatpak", "rpm", "deb"],
+    "desktop": {
+      "StartupNotify": false
+    }
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  },
+  "flatpak": {
+    "runtimeVersion": "22.08",
+    "baseVersion": "22.08"
+  }
+}
