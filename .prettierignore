@@ -3,4 +3,6 @@ coverage
 playwright-report
 .output
 docs/.vitepress/cache
+dist
 dist-electron
+release
