@@ -51,7 +51,7 @@
     "@types/node": "^18",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vitest/coverage-istanbul": "^0.31.4",
-    "@vitest/ui": "^0.31.4",
+    "@vitest/ui": "^0.32.4",
     "@vue/test-utils": "^2.3.2",
     "concurrently": "^8.2.0",
     "electron": "^25.2.0",
