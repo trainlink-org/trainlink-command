@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import pkg from './package.json';
 export default defineNuxtConfig({
     // modules: ['nuxt-electron', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
     modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
@@ -7,6 +8,14 @@ export default defineNuxtConfig({
     routeRules: {
         '/routes': { ssr: false },
         '/settings/*': { ssr: false },
+    },
+
+    runtimeConfig: {
+        public: {
+            version: pkg.version,
+            name: pkg.name,
+            productName: 'TrainLink Command',
+        },
     },
 
     devtools: {

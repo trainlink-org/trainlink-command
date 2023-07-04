@@ -5,6 +5,7 @@ import { trackPower } from '@/utils/main';
 
 // import SelectNavComponent from './SelectNavComponent.vue';
 import { socket } from '@/utils/socketHelper';
+import { useConfigStore } from '@/stores/config';
 
 const router = useRouter();
 
@@ -16,10 +17,23 @@ function selectHandler(event: string) {
 function setState() {
     socket.emit('throttle/setTrackPower', !trackPower.value);
 }
+const configStore = useConfigStore();
 </script>
 
 <template>
     <div class="absolute left-0 top-0 z-10 flex h-10 items-center pl-1">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+        >
+            <path d="M7.5 1v7h1V1h-1z" />
+            <path
+                d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"
+            />
+        </svg>
         <label class="switch">
             <input v-model="trackPower" type="checkbox" @click="setState" />
             <span class="slider round" />
@@ -42,14 +56,38 @@ function setState() {
             @input="selectHandler"
         />
     </div>
-    <RouterLink class="absolute right-0 top-0" to="/settings">
-        <img
-            src="~/assets/icons/gear-fill.svg"
-            alt="Settings"
-            width="32"
-            class="h-10 p-1"
-        />
-    </RouterLink>
+    <div class="absolute right-0 top-0 flex flex-row space-x-2 items-center">
+        <div class="group cursor-pointer">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                fill="default"
+                viewBox="0 0 16 16"
+            >
+                <path
+                    d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-8zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-11z"
+                />
+            </svg>
+            <div
+                class="absolute right-8 top-10 border-4 rounded-lg mt-1 flex flex-col items-center text-center group-hover:visible invisible bg-white"
+            >
+                <p class="text-xl border-b-2 px-6 pt-2">Connected</p>
+                <p class="px-2 pb-2">
+                    Connected to {{ configStore.driverName }} driver
+                </p>
+            </div>
+        </div>
+        <!-- <RouterLink class="absolute right-0 top-0" to="/settings"> -->
+        <RouterLink to="/settings">
+            <img
+                src="~/assets/icons/gear-fill.svg"
+                alt="Settings"
+                width="32"
+                class="h-10 p-1"
+            />
+        </RouterLink>
+    </div>
 </template>
 
 <style scoped>

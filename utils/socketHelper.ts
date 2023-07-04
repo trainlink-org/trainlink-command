@@ -1,11 +1,11 @@
 import { io, Socket } from 'socket.io-client';
 import {
-    connected,
+    // connected,
     destinations,
     trackPower,
     turnoutLinks,
     turnouts,
-    version,
+    // version,
 } from './main';
 
 import type {
@@ -21,24 +21,24 @@ export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
 
 // import { store } from './main';
 
-socket.on('connect', () => {
-    connected.value = true;
-    console.log('Connected!\nId is ' + socket.id);
-    socket.emit(
-        'metadata/handshake',
-        version.clientName,
-        version.clientVersion
-    );
-});
+// socket.on('connect', () => {
+//     connected.value = true;
+//     console.log('Connected!\nId is ' + socket.id);
+//     socket.emit(
+//         'metadata/handshake',
+//         version.clientName,
+//         version.clientVersion
+//     );
+// });
 
-socket.on('disconnect', () => {
-    connected.value = false;
-});
+// socket.on('disconnect', () => {
+//     connected.value = false;
+// });
 
-socket.on('metadata/handshake', (name, serverVersion) => {
-    version.serverName = name;
-    version.serverVersion = serverVersion;
-});
+// socket.on('metadata/handshake', (name, serverVersion) => {
+//     version.serverName = name;
+//     version.serverVersion = serverVersion;
+// });
 
 // socket.on('metadata/initialState/locos', async (locosState) => {
 //     console.log('Initial state received');

@@ -1,8 +1,38 @@
 import { useLocoStore } from '~/stores/locos';
 import { Loco } from '@trainlink-org/trainlink-types';
+import { useConfigStore } from '~/stores/config';
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);
+    const configStore = useConfigStore(context.$pinia);
+    const runtimeConfig = useRuntimeConfig();
+
+    socket.on('connect', () => {
+        // connected.value = true;
+        configStore.connected = true;
+        console.log('Connected!\nId is ' + socket.id);
+        socket.emit(
+            'metadata/handshake',
+            runtimeConfig.public.name,
+            runtimeConfig.public.productName,
+            runtimeConfig.public.version
+        );
+    });
+
+    socket.on('disconnect', () => {
+        configStore.connected = false;
+        console.log('Disconnected');
+    });
+
+    socket.on(
+        'metadata/handshake',
+        (serverName, serverProductName, serverVersion) => {
+            configStore.serverName = serverName;
+            configStore.serverProductName = serverProductName;
+            configStore.serverVersion = serverVersion;
+        }
+    );
+
     socket.on('metadata/initialState/locos', async (locosState) => {
         console.log('New initial state');
         for (const locoString of locosState) {
@@ -66,5 +96,9 @@ export default function () {
 
     socket.on('config/locoDeleted', (address) => {
         locoStore.removeLoco(address);
+    });
+
+    socket.on('hardware/driverChanged', (driver) => {
+        configStore.driverName = driver;
     });
 }
