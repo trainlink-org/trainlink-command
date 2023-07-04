@@ -4,7 +4,7 @@ useSocket();
 </script>
 
 <template>
-    <div class="h-screen bg-white">
+    <div class="h-screen">
         <NavComponent />
         <!-- <RouterView/> -->
         <NuxtPage />
