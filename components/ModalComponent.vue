@@ -23,10 +23,10 @@ const emit = defineEmits<{
         @click="emit('cancel')"
     >
         <div
-            class="flex h-1/3 w-2/3 flex-col justify-between rounded-lg border-4 border-borderColor-300 bg-white text-center md:w-1/3"
+            class="flex h-1/3 w-2/3 flex-col justify-between rounded-lg border-4 border-borderColor-300 bg-white text-center md:w-1/3 fixed"
             @click="(event) => event.stopPropagation()"
         >
-            <div>
+            <div class="static">
                 <h1
                     class="w-full border-b-2 border-borderColor-300 bg-transparent text-lg"
                 >
@@ -35,7 +35,7 @@ const emit = defineEmits<{
                 <!-- <span
                     class="border-b-2 border-borderColor-300 w-full"
                 /> -->
-                <div class="p-1">
+                <div class="p-1 static">
                     <slot />
                 </div>
             </div>

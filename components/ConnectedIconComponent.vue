@@ -1,22 +1,41 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import { socket } from '@/utils/socketHelper';
-import { connect } from 'http2';
+import { HardwareDevice } from '@trainlink-org/trainlink-types';
 
 const configStore = useConfigStore();
-const availableDrivers = ['Virtual', 'DCC-EX'];
-const selected = ref('Virtual');
+
+const advanced = ref(false);
 const address = ref('');
+const selected = ref('Virtual');
+const selectedDevice: Ref<HardwareDevice | undefined> = ref(undefined);
 const connectionModalVisible = ref(false);
 
+function openModal() {
+    socket.emit('hardware/getDevices');
+    selectedDevice.value = configStore.device;
+    connectionModalVisible.value = true;
+}
+
+function cancelModal() {
+    selectedDevice.value = undefined;
+    connectionModalVisible.value = false;
+}
+
 function connectDriver() {
-    socket.emit('hardware/setDriver', selected.value, address.value);
+    if (advanced.value) {
+        socket.emit('hardware/setDriver', selected.value, address.value);
+    } else {
+        console.log(selectedDevice.value);
+        if (selectedDevice.value !== undefined)
+            socket.emit('hardware/setDevice', selectedDevice.value);
+    }
     connectionModalVisible.value = false;
 }
 </script>
 
 <template>
-    <div class="group cursor-pointer" @click="connectionModalVisible = true">
+    <div class="group cursor-pointer" @click="openModal">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="30"
@@ -33,7 +52,8 @@ function connectDriver() {
         >
             <p class="text-xl border-b-2 px-6 pt-2">Connected</p>
             <p class="px-2 pb-2">
-                Connected to {{ configStore.driverName }} driver
+                Connected to {{ configStore.device?.name }} using the
+                {{ configStore.driverName }} driver
             </p>
         </div>
     </div>
@@ -42,24 +62,53 @@ function connectDriver() {
         title="Connection Properties"
         submitText="Connect"
         @submit="connectDriver"
-        @cancel="connectionModalVisible = false"
+        @cancel="cancelModal"
     >
-        <div class="grid grid-cols-2 gap-2 mx-2 place-items-center">
+        <div
+            v-if="advanced"
+            class="grid grid-cols-2 gap-2 mx-2 place-items-center"
+        >
             <p>Driver:</p>
             <SelectComponent
-                :options="availableDrivers"
+                :options="configStore.availableDrivers"
                 v-model:selected="selected"
             />
             <p class="col-span-2">
-                Currently selected: {{ configStore.driverName }}
+                Currently using: {{ configStore.driverName }}
             </p>
             <span class="col-span-2 border-b-2 mx-10" />
-            <p>Address:</p>
+            <p v-if="selected !== 'Virtual'">Address:</p>
             <input
+                v-if="selected !== 'Virtual'"
                 type="text"
                 class="w-full rounded border-2 border-primary-400 invalid:border-red-600"
                 v-model="address"
             />
         </div>
+        <div v-else class="grid grid-cols-2 gap-2 mx-2 place-items-center">
+            <p>Available Devices:</p>
+            <select class="w-full rounded" v-model="selectedDevice">
+                <option disabled :value="undefined" class="w-full">
+                    Select a device
+                </option>
+                <option
+                    v-for="device in configStore.availableDevices.values()"
+                    :value="device"
+                >
+                    <span v-if="device.address !== undefined"
+                        >{{ device.name }} ({{ device.address }}) [{{
+                            device.driver
+                        }}]</span
+                    >
+                    <span v-else>{{ device.name }} [{{ device.driver }}]</span>
+                </option>
+            </select>
+        </div>
+        <p
+            class="cursor-pointer text-blue-400 left-1 bottom-1 text-left absolute"
+            @click="advanced = !advanced"
+        >
+            Switch to {{ advanced ? 'basic mode' : 'advanced mode' }}
+        </p>
     </ModalComponent>
 </template>

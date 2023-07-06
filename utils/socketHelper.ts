@@ -19,6 +19,9 @@ export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
         ? io('http://' + window.location.hostname + ':6868')
         : io('http://localhost:6868');
 
+// socket.on('connect', () => {
+//     console.log('Connected');
+// });
 // import { store } from './main';
 
 // socket.on('connect', () => {

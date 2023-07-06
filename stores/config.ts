@@ -1,8 +1,12 @@
+import { HardwareDevice } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
 export const useConfigStore = defineStore('config', () => {
     const driverName = ref('');
     const driverMsg = ref('');
+    const availableDrivers: Ref<string[]> = ref([]);
+    const availableDevices: Ref<HardwareDevice[]> = ref([]);
+    const device: Ref<HardwareDevice | undefined> = ref();
     const connected = ref(false);
     const serverVersion = ref('');
     const serverName = ref('');
@@ -11,6 +15,9 @@ export const useConfigStore = defineStore('config', () => {
     return {
         driverName,
         driverMsg,
+        availableDrivers,
+        availableDevices,
+        device,
         connected,
         serverVersion,
         serverName,

@@ -3,7 +3,7 @@ import { useConfigStore } from '@/stores/config';
 
 // import { connected } from './utils/main';
 const configStore = useConfigStore();
-useSocket();
+const socket = useSocket().socket;
 </script>
 
 <template>

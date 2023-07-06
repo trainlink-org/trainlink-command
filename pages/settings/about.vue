@@ -32,6 +32,12 @@ const runtimeConfig = useRuntimeConfig();
         <div>
             <p class="text-2xl">Hardware:</p>
             <p>Using the {{ configStore.driverName }} driver</p>
+            <p v-if="configStore.device?.address !== undefined">
+                To connect to {{ configStore.device?.name }} ({{
+                    configStore.device?.address
+                }})
+            </p>
+            <p v-else>To connect to {{ configStore.device?.name }}</p>
             <p>{{ configStore.driverMsg }}</p>
         </div>
     </div>
