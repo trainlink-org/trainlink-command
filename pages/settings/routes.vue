@@ -23,7 +23,9 @@ import {
 // import ConnectorHandleComponent from '../mapComponents/ConnectorHandleComponent.vue';
 // import { useRouter } from 'vue-router';
 // import ModalComponent from '../ModalComponent.vue';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
+import { useSocketStore } from '@/stores/socket';
+const socket = useSocketStore().socketRef;
 
 const changesMade = ref(false);
 

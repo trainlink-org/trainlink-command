@@ -4,9 +4,12 @@
 // import { ref } from 'vue';
 import { runningAutomations } from '@/utils/main';
 import { AutomationStatus } from '@trainlink-org/trainlink-types';
-import { socket } from '@/utils/socketHelper';
+import { useSocketStore } from '@/stores/socket';
+// import { socket } from '@/utils/socketHelper';
 const route = useRoute();
 const router = useRouter();
+
+const socket = useSocketStore().socketRef;
 
 const script = ref(
     runningAutomations.value.get((route.params.id as string).replace('-', '#'))

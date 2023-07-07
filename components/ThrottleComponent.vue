@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { Direction } from '@trainlink-org/trainlink-types';
 import { useLocoStore } from '@/stores/locos';
-import { LocoClient } from 'stores/locos';
+import { LocoClient } from '@/stores/locos';
+import { useSocketStore } from '@/stores/socket';
 
 const props = defineProps({
     id: { type: Number, required: true },
 });
 
 const locoStore = useLocoStore();
+const socket = useSocketStore().socketRef;
 
 // Passed into the proxy to intercept speed and direction changes
 const handler: ProxyHandler<LocoClient> = {

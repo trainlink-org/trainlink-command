@@ -1,6 +1,22 @@
 <script setup lang="ts">
-import { connected } from './utils/main';
+import { useConfigStore } from '@/stores/config';
+import { useSocketStore } from '@/stores/socket';
+
+// import { connected } from './utils/main';
+const configStore = useConfigStore();
 useSocket();
+// const socket = useSocket().socket;
+// const socket2 = useSocket().socket;
+// socket.on('connect', () => {
+//     console.log('Connect in app');
+// });
+// socket2.on('connect', () => {
+//     console.log('Connect in app (2)');
+// });
+// const socketStore = useSocketStore();
+// socketStore.socketRef.on('hardware/availableDevices', () => {
+//     console.log('Connect in app (3)');
+// });
 </script>
 
 <template>
@@ -9,7 +25,7 @@ useSocket();
         <!-- <RouterView/> -->
         <NuxtPage />
     </div>
-    <div v-if="!connected" class="cursor-wait">
+    <div v-if="!configStore.connected" class="cursor-wait">
         <div
             class="absolute top-0 left-0 z-20 h-screen w-screen bg-black opacity-25"
         />
@@ -46,7 +62,7 @@ useSocket();
                     />
                 </g>
             </svg>
-            <p class="select-none text-xl">Connecting...</p>
+            <p class="select-none text-xl">Connecting to server...</p>
         </div>
     </div>
 </template>

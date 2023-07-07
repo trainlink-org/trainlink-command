@@ -2,7 +2,7 @@
 // import App from './App.vue';
 // import router from './router';
 
-import { socket } from './socketHelper';
+// import { socket } from './socketHelper';
 // import type { AutomationScriptClient, Destination, PID, RunningAutomationClient, Turnout, TurnoutLink, RouteObject } from './shared';
 import type {
     AutomationScriptClient,
@@ -37,14 +37,14 @@ export const destinationStates: Map<number, DestinationState> = reactive(
     new Map()
 );
 
-export const version = reactive({
-    clientVersion: '0.0.0',
-    clientName: 'Default client',
-    serverVersion: '0.0.0',
-    serverName: 'Default server',
-});
+// export const version = reactive({
+//     clientVersion: '0.0.0',
+//     clientName: 'TrainLink Command',
+//     serverVersion: '0.0.0',
+//     serverName: 'Default server',
+// });
 
-export const connected = ref(false);
+// export const connected = ref(false);
 
 // const app = createApp(App);
 

@@ -4,7 +4,9 @@
 import { trackPower } from '@/utils/main';
 
 // import SelectNavComponent from './SelectNavComponent.vue';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
+import { useConfigStore } from '@/stores/config';
+import { useSocketStore } from '@/stores/socket';
 
 const router = useRouter();
 
@@ -16,10 +18,24 @@ function selectHandler(event: string) {
 function setState() {
     socket.emit('throttle/setTrackPower', !trackPower.value);
 }
+const configStore = useConfigStore();
+const socket = useSocketStore().socketRef;
 </script>
 
 <template>
     <div class="absolute left-0 top-0 z-10 flex h-10 items-center pl-1">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+        >
+            <path d="M7.5 1v7h1V1h-1z" />
+            <path
+                d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"
+            />
+        </svg>
         <label class="switch">
             <input v-model="trackPower" type="checkbox" @click="setState" />
             <span class="slider round" />
@@ -42,14 +58,18 @@ function setState() {
             @input="selectHandler"
         />
     </div>
-    <RouterLink class="absolute right-0 top-0" to="/settings">
-        <img
-            src="~/assets/icons/gear-fill.svg"
-            alt="Settings"
-            width="32"
-            class="h-10 p-1"
-        />
-    </RouterLink>
+    <div class="absolute right-0 top-0 flex flex-row space-x-2 items-center">
+        <ConnectedIconComponent />
+        <!-- <RouterLink class="absolute right-0 top-0" to="/settings"> -->
+        <RouterLink to="/settings">
+            <img
+                src="~/assets/icons/gear-fill.svg"
+                alt="Settings"
+                width="32"
+                class="h-10 p-1"
+            />
+        </RouterLink>
+    </div>
 </template>
 
 <style scoped>

@@ -15,6 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:selected', value: string): void;
+    (e: 'opened'): void;
 }>();
 
 // const emit = defineEmits(['update:selected'])
@@ -30,6 +31,12 @@ const selectedComputed = computed({
     set(value) {
         emit('update:selected', value);
     },
+});
+
+watch(open, (open) => {
+    if (open) {
+        emit('opened');
+    }
 });
 </script>
 

@@ -14,9 +14,12 @@ import {
 
 import { turnoutLinks, turnouts, destinations } from '@/utils/main';
 import { TurnoutState, type Destination } from '@trainlink-org/trainlink-types';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
 
 import { usedLinks, usedTurnouts, destinationStates } from '@/utils/main';
+import { useSocketStore } from '@/stores/socket';
+
+const socket = useSocketStore().socketRef;
 
 const windowWidth = ref(window.innerWidth);
 
