@@ -104,6 +104,7 @@ app.on('window-all-closed', () => {
 
 const serverConfig: ServerConfig = {
     port: 6868,
+    name: '',
     productName: 'TrainLink Connect (Integrated Server)',
     configPath: isProduction ? app.getPath('userData') : './release',
 };

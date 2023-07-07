@@ -5,10 +5,11 @@ export default defineNuxtConfig({
     modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
     components: [{ path: '~/components/mapComponents' }, '~/components'],
 
-    routeRules: {
-        '/routes': { ssr: false },
-        '/settings/*': { ssr: false },
-    },
+    // routeRules: {
+    //     '/routes': { ssr: false },
+    //     '/settings/*': { ssr: false },
+    // },
+    ssr: false,
 
     runtimeConfig: {
         public: {

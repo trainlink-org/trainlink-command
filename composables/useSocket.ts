@@ -6,17 +6,20 @@ import type {
     ServerToClientEvents,
     ClientToServerEvents,
 } from '@trainlink-org/trainlink-types';
+import { useSocketStore } from '@/stores/socket';
+
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);
     const configStore = useConfigStore(context.$pinia);
     const runtimeConfig = useRuntimeConfig();
+    const socket = useSocketStore().socketRef;
 
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
-        typeof window !== 'undefined'
-            ? io('http://' + window.location.hostname + ':6868')
-            : io('http://localhost:6868');
-    console.log('Composable');
+    // const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
+    //     typeof window !== 'undefined'
+    //         ? io('http://' + window.location.hostname + ':6868')
+    //         : io('http://localhost:6868');
+    // console.log('Composable');
     socket.on('connect', () => {
         // connected.value = true;
         configStore.connected = true;

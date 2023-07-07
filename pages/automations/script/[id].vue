@@ -3,9 +3,11 @@
 import { automationList, allocatedLocos } from '@/utils/main';
 // import { ref, watch, computed } from 'vue';
 // import { useRoute, useRouter } from 'vue-router';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
 import { AutomationType } from '@trainlink-org/trainlink-types';
+import { useSocketStore } from 'stores/socket';
 import { useLocoStore } from '~/stores/locos';
+const socket = useSocketStore().socketRef;
 
 // import SelectComponent from '@/components/SelectComponent.vue';
 const locoStore = useLocoStore();

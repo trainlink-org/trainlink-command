@@ -4,8 +4,9 @@
 import { trackPower } from '@/utils/main';
 
 // import SelectNavComponent from './SelectNavComponent.vue';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
 import { useConfigStore } from '@/stores/config';
+import { useSocketStore } from '@/stores/socket';
 
 const router = useRouter();
 
@@ -18,6 +19,7 @@ function setState() {
     socket.emit('throttle/setTrackPower', !trackPower.value);
 }
 const configStore = useConfigStore();
+const socket = useSocketStore().socketRef;
 </script>
 
 <template>

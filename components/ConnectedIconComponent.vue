@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
-import { socket } from '@/utils/socketHelper';
+// import { socket } from '@/utils/socketHelper';
 import { HardwareDevice } from '@trainlink-org/trainlink-types';
+import { useSocketStore } from '@/stores/socket';
 
 const configStore = useConfigStore();
+const socket = useSocketStore().socketRef;
 
 const advanced = ref(false);
 const address = ref('');
@@ -12,6 +14,7 @@ const selectedDevice: Ref<HardwareDevice | undefined> = ref(undefined);
 const connectionModalVisible = ref(false);
 
 function openModal() {
+    console.log('Getting devices');
     socket.emit('hardware/getDevices');
     selectedDevice.value = configStore.device;
     connectionModalVisible.value = true;

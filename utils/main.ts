@@ -2,7 +2,7 @@
 // import App from './App.vue';
 // import router from './router';
 
-import { socket } from './socketHelper';
+// import { socket } from './socketHelper';
 // import type { AutomationScriptClient, Destination, PID, RunningAutomationClient, Turnout, TurnoutLink, RouteObject } from './shared';
 import type {
     AutomationScriptClient,
