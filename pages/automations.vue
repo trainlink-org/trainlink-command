@@ -493,7 +493,7 @@ const testString = ref('');
         </div>
         <div
             class="absolute bottom-0 left-0 mb-2 ml-2 h-10 w-10 rounded-full border-2 border-borderColor-300 bg-primary-200 p-1 pl-2 focus:bg-accent-400"
-            @click="router.push('/throttle/jump')"
+            @click="router.push('/')"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
