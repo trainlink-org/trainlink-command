@@ -51,9 +51,11 @@ function connectDriver() {
             />
         </svg>
         <div
-            class="absolute right-8 top-10 border-4 rounded-lg mt-1 flex flex-col items-center text-center group-hover:visible invisible bg-white"
+            class="absolute right-8 top-10 border-4 rounded-lg mt-1 flex flex-col items-center text-center group-hover:visible invisible bg-white border-borderColor-300"
         >
-            <p class="text-xl border-b-2 px-6 pt-2">Connected</p>
+            <p class="text-xl border-b-2 px-6 pt-2 border-borderColor-300">
+                Connected
+            </p>
             <p class="px-2 pb-2">
                 Connected to {{ configStore.device?.name }} using the
                 {{ configStore.driverName }} driver

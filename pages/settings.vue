@@ -73,7 +73,7 @@ watch(route, (newRoute) => {
         </div>
         <div
             v-if="detailsOpen || !smallScreen"
-            class="h-5/6 w-11/12 rounded-lg border-4 md:w-4/6"
+            class="h-5/6 w-11/12 rounded-lg border-4 border-borderColor-300 md:w-4/6"
         >
             <RouterView />
         </div>
