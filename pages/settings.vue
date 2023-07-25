@@ -43,7 +43,7 @@ watch(route, (newRoute) => {
         >
             <ul class="h-full">
                 <li
-                    class="flex h-8 w-full cursor-pointer items-center justify-center border-b-2 border-primary-300 px-2 hover:bg-primary-200 select-none"
+                    class="flex h-8 w-full cursor-pointer items-center justify-center border-b-2 border-borderColor-300 px-2 hover:bg-primary-200 select-none"
                     @click="
                         router.push('/settings/');
                         detailsOpen = true;
@@ -52,7 +52,7 @@ watch(route, (newRoute) => {
                     Throttle
                 </li>
                 <li
-                    class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-primary-300 select-none"
+                    class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-borderColor-300 select-none"
                     @click="
                         router.push('/settings/routes');
                         detailsOpen = true;
@@ -61,7 +61,7 @@ watch(route, (newRoute) => {
                     Routes
                 </li>
                 <li
-                    class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-primary-30 select-none"
+                    class="flex h-8 w-full cursor-pointer items-center justify-center px-2 hover:bg-primary-200 border-b-2 border-borderColor-300 select-none"
                     @click="
                         router.push('/settings/about');
                         detailsOpen = true;
