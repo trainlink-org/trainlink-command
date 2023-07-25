@@ -5,8 +5,8 @@ import { automationList, allocatedLocos } from '@/utils/main';
 // import { useRoute, useRouter } from 'vue-router';
 // import { socket } from '@/utils/socketHelper';
 import { AutomationType } from '@trainlink-org/trainlink-types';
-import { useSocketStore } from 'stores/socket';
-import { useLocoStore } from '~/stores/locos';
+import { useSocketStore } from '@/stores/socket';
+import { useLocoStore } from '@/stores/locos';
 const socket = useSocketStore().socketRef;
 
 // import SelectComponent from '@/components/SelectComponent.vue';
@@ -28,7 +28,7 @@ watch(
     () => {
         console.log(route.params);
         script.value = automationList.get(Number(route.params.id));
-    }
+    },
 );
 
 watch(script, (newScript) => {
@@ -57,7 +57,7 @@ function runAutomation() {
         socket.emit(
             'automation/executeAutomation',
             script.value.id,
-            allocateLocoSelect.value
+            allocateLocoSelect.value,
         );
         allocateLocoOpen.value = false;
         allocateLocoSelect.value = 'Select a Train';
@@ -137,7 +137,7 @@ function selectLocoMobile(id?: number, type?: AutomationType) {
                                 socket.emit(
                                     'automation/setDescription',
                                     script.id,
-                                    script.description
+                                    script.description,
                                 );
                         "
                     >
@@ -197,7 +197,7 @@ function selectLocoMobile(id?: number, type?: AutomationType) {
                         if (script)
                             socket.emit(
                                 'automation/deleteAutomation',
-                                script.id
+                                script.id,
                             );
                         router.back();
                     "
@@ -273,7 +273,7 @@ function selectLocoMobile(id?: number, type?: AutomationType) {
                         if (script)
                             socket.emit(
                                 'automation/deleteAutomation',
-                                script.id
+                                script.id,
                             );
                         router.back();
                     "
