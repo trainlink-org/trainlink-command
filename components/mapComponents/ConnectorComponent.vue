@@ -1,6 +1,7 @@
 <!-- Connector component for the Routes page -->
 <script setup lang="ts">
 // import { computed  } from 'vue';
+import { after } from 'node:test';
 import { type Coordinate } from './shared';
 
 const props = defineProps({
@@ -12,7 +13,7 @@ const props = defineProps({
     activeRoute: { type: Boolean, required: true },
 });
 
-const midPoints = calculateMidPoints(props.start, props.points, props.end);
+const midPoints = calculateMidPointsNew(props.start, props.points, props.end);
 const path = computed(() => {
     let path = `M ${midPoints.startMid.x} ${midPoints.startMid.y}`;
 
@@ -168,6 +169,52 @@ function calculateMidPoints(
     return {
         startMid: newStartPoint,
         endMid: newEndPoint,
+    };
+}
+function calculateMidPointsNew(
+    startPoint: Coordinate,
+    points: Coordinate[],
+    endPoint: Coordinate,
+) {
+    let afterStart = endPoint;
+    let beforeEnd = startPoint;
+    if (points.length === 1) {
+        afterStart = points[0];
+        beforeEnd = points[0];
+    } else if (points.length > 1) {
+        afterStart = points[0];
+        beforeEnd = points[points.length - 1];
+    }
+
+    let startDistance = Math.hypot(
+        afterStart.x - startPoint.x,
+        afterStart.y - startPoint.y,
+    );
+    let endDistance = Math.hypot(
+        beforeEnd.x - endPoint.x,
+        beforeEnd.y - endPoint.y,
+    );
+
+    const distanceFactor = 5;
+    let startMidPoint = {
+        x:
+            startPoint.x +
+            (distanceFactor / startDistance) * (afterStart.x - startPoint.x),
+        y:
+            startPoint.y +
+            (distanceFactor / startDistance) * (afterStart.y - startPoint.y),
+    };
+    let endMidPoint = {
+        x:
+            endPoint.x +
+            (distanceFactor / endDistance) * (beforeEnd.x - endPoint.x),
+        y:
+            endPoint.y +
+            (distanceFactor / endDistance) * (beforeEnd.y - endPoint.y),
+    };
+    return {
+        startMid: startMidPoint,
+        endMid: endMidPoint,
     };
 }
 </script>
