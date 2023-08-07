@@ -111,6 +111,16 @@ function toggleDestination(destination: Destination) {
         selectedDestinationsNum.value = 0;
     }
 }
+import panzoom from 'panzoom';
+onMounted(() => {
+    const svg: HTMLElement | SVGElement | null =
+        document.querySelector('#panzoom');
+    console.log(svg);
+    if (svg) {
+        panzoom(svg);
+        console.log('panzoom');
+    }
+});
 </script>
 
 <template>
@@ -119,42 +129,49 @@ function toggleDestination(destination: Destination) {
             class="h-5/6 w-11/12 overflow-y-scroll rounded-lg border-4 border-borderColor-300"
         >
             <svg id="mapSvg" class="h-full w-full" :viewBox="viewBox">
-                <ConnectorComponent
-                    v-for="link in turnoutLinks.values()"
-                    :key="link.id"
-                    :start-seg-active="link.startActive"
-                    :end-seg-active="link.endActive"
-                    :start="
-                        turnouts.get(link.start)?.coordinate ||
-                        destinations.get(link.start)?.coordinate || {
-                            x: -5,
-                            y: -5,
-                        }
-                    "
-                    :points="link.points"
-                    :end="
-                        turnouts.get(link.end)?.coordinate || { x: -5, y: -5 }
-                    "
-                    :active-route="usedLinks.get(link.id) !== undefined"
-                />
-                <TurnoutComponent
-                    v-for="turnout in turnouts.values()"
-                    :key="turnout.id"
-                    :coordinate="turnout.coordinate"
-                    :active-route="usedTurnouts.get(turnout.id) !== undefined"
-                    @click="setTurnout(turnout.id)"
-                />
-                <!-- @click="showAlert('clicked')" -->
-                <DestinationComponent
-                    v-for="destination in destinations.values()"
-                    :key="destination.id"
-                    :state="
-                        destinationStates.get(destination.id) ||
-                        DestinationState.inactive
-                    "
-                    :coordinate="destination.coordinate"
-                    @click="toggleDestination(destination)"
-                />
+                <g id="panzoom">
+                    <ConnectorComponent
+                        v-for="link in turnoutLinks.values()"
+                        :key="link.id"
+                        :start-seg-active="link.startActive"
+                        :end-seg-active="link.endActive"
+                        :start="
+                            turnouts.get(link.start)?.coordinate ||
+                            destinations.get(link.start)?.coordinate || {
+                                x: -5,
+                                y: -5,
+                            }
+                        "
+                        :points="link.points"
+                        :end="
+                            turnouts.get(link.end)?.coordinate || {
+                                x: -5,
+                                y: -5,
+                            }
+                        "
+                        :active-route="usedLinks.get(link.id) !== undefined"
+                    />
+                    <TurnoutComponent
+                        v-for="turnout in turnouts.values()"
+                        :key="turnout.id"
+                        :coordinate="turnout.coordinate"
+                        :active-route="
+                            usedTurnouts.get(turnout.id) !== undefined
+                        "
+                        @click="setTurnout(turnout.id)"
+                    />
+                    <!-- @click="showAlert('clicked')" -->
+                    <DestinationComponent
+                        v-for="destination in destinations.values()"
+                        :key="destination.id"
+                        :state="
+                            destinationStates.get(destination.id) ||
+                            DestinationState.inactive
+                        "
+                        :coordinate="destination.coordinate"
+                        @click="toggleDestination(destination)"
+                    />
+                </g>
             </svg>
         </div>
         <div
