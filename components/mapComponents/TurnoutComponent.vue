@@ -8,10 +8,10 @@ const props = defineProps({
     activeRoute: { type: Boolean, required: true },
 });
 const xCoord = computed(() => {
-    return calculateCoord(props.coordinate).x;
+    return props.coordinate.x;
 });
 const yCoord = computed(() => {
-    return calculateCoord(props.coordinate).y;
+    return props.coordinate.y;
 });
 </script>
 
@@ -21,6 +21,6 @@ const yCoord = computed(() => {
         :class="props.activeRoute ? 'fill-blue-700' : ''"
         :cx="xCoord"
         :cy="yCoord"
-        :r="calculateSize(1.5)"
+        :r="1.25"
     />
 </template>

@@ -1,13 +1,7 @@
 <!-- Connector component for the Routes page -->
 <script setup lang="ts">
 // import { computed  } from 'vue';
-import {
-    calculateCoord,
-    calculateSize,
-    calculateXCoord,
-    calculateYCoord,
-    type Coordinate,
-} from './shared';
+import { type Coordinate } from './shared';
 
 const props = defineProps({
     start: { type: Object as () => Coordinate, required: true },
@@ -19,50 +13,18 @@ const props = defineProps({
 });
 
 const midPoints = calculateMidPoints(props.start, props.points, props.end);
-// const path = computed(() => {
-//     let path = `M ${calculateXCoord(midPoints.startMid.x)} ${calculateYCoord(
-//         midPoints.startMid.y,
-//     )}`;
-
-//     Array.from(props.points).forEach((point) => {
-//         const virtualPoint = calculateCoord(point);
-//         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
-//     });
-//     path = `${path} L ${calculateXCoord(midPoints.endMid.x)} ${calculateYCoord(
-//         midPoints.endMid.y,
-//     )}`;
-//     return path;
-// });
 const path = computed(() => {
-    let path = `M ${midPoints.startMid.x * 10} ${midPoints.startMid.y * 10}`;
+    let path = `M ${midPoints.startMid.x} ${midPoints.startMid.y}`;
 
     Array.from(props.points).forEach((point) => {
         const virtualPoint = point;
-        path = `${path} L ${virtualPoint.x * 10} ${virtualPoint.y * 10}`;
+        path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
-    path = `${path} L ${midPoints.endMid.x * 10} ${midPoints.endMid.y * 10}`;
+    path = `${path} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
     return path;
 });
-// const startPath = computed(() => {
-//     return `M ${calculateXCoord(props.start.x)} ${calculateYCoord(
-//         props.start.y,
-//     )} L ${calculateXCoord(midPoints.startMid.x)} ${calculateYCoord(
-//         midPoints.startMid.y,
-//     )}`;
-// });
-const startPath = `M ${props.start.x * 10} ${props.start.y * 10} L ${
-    midPoints.startMid.x * 10
-} ${midPoints.startMid.y * 10}`;
-// const endPath = computed(() => {
-//     return `M ${calculateXCoord(props.end.x)} ${calculateYCoord(
-//         props.end.y,
-//     )} L ${calculateXCoord(midPoints.endMid.x)} ${calculateYCoord(
-//         midPoints.endMid.y,
-//     )}`;
-// });
-const endPath = `M ${props.end.x * 10} ${props.end.y * 10} L ${
-    midPoints.endMid.x * 10
-} ${midPoints.endMid.y * 10}`;
+const startPath = `M ${props.start.x} ${props.start.y} L ${midPoints.startMid.x} ${midPoints.startMid.y}`;
+const endPath = `M ${props.end.x} ${props.end.y} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
 function calculateMidPoints(
     startPoint: Coordinate,
     points: Coordinate[],
@@ -214,7 +176,7 @@ function calculateMidPoints(
     <path
         :d="startPath"
         class="fill-transparent"
-        :stroke-width="`${calculateSize(props.startSegActive ? 1 : 0.5)}`"
+        :stroke-width="`${props.startSegActive ? 1 : 0.5}`"
         :class="
             props.startSegActive
                 ? 'stroke-green-600'
@@ -226,14 +188,14 @@ function calculateMidPoints(
     <path
         v-if="midPoints.startMid !== midPoints.endMid"
         :d="path"
-        :stroke-width="`${calculateSize(0.5)}`"
+        :stroke-width="`${0.5}`"
         class="fill-transparent"
         :class="props.activeRoute ? 'stroke-blue-600' : 'stroke-black'"
     />
     <path
         :d="endPath"
         class="fill-transparent"
-        :stroke-width="`${calculateSize(props.endSegActive ? 1 : 0.5)}`"
+        :stroke-width="`${props.endSegActive ? 1 : 0.5}`"
         :class="
             props.endSegActive
                 ? `stroke-green-600`

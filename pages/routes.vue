@@ -59,9 +59,9 @@ function setTurnout(id: number) {
     }
 }
 
-const viewBox = computed(() => {
-    return `0 0 ${svgWidth.value} ${svgHeight.value}`;
-});
+// const viewBox = computed(() => {
+//     return `0 0 ${svgWidth.value} ${svgHeight.value}`;
+// });
 
 function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     console.log(`${turnoutID}: ${turnoutState}`);
@@ -111,16 +111,28 @@ function toggleDestination(destination: Destination) {
         selectedDestinationsNum.value = 0;
     }
 }
-import panzoom from 'panzoom';
+import panzoom, { PanZoom } from 'panzoom';
+
+const svgRef: Ref<SVGElement | null> = ref(null);
+const panzoomInstance: Ref<PanZoom | null> = ref(null);
 onMounted(() => {
-    const svg: HTMLElement | SVGElement | null =
-        document.querySelector('#panzoom');
-    console.log(svg);
-    if (svg) {
-        panzoom(svg);
-        console.log('panzoom');
+    if (svgRef.value !== null) {
+        panzoomInstance.value = panzoom(svgRef.value, {
+            beforeWheel: function (e) {
+                return !e.ctrlKey;
+            },
+        });
     }
 });
+
+function homePanZoom() {
+    console.log(panzoomInstance.value?.getTransform());
+    if (panzoomInstance.value) {
+        // panzoomInstance.value.smoothZoom(0, 0, panzoomInstance.value.te)
+        panzoomInstance.value.moveTo(0, 0);
+        panzoomInstance.value.zoomAbs(0, 0, 1);
+    }
+}
 </script>
 
 <template>
@@ -128,50 +140,53 @@ onMounted(() => {
         <div
             class="h-5/6 w-11/12 overflow-y-scroll rounded-lg border-4 border-borderColor-300"
         >
-            <svg id="mapSvg" class="h-full w-full" :viewBox="viewBox">
-                <g id="panzoom">
-                    <ConnectorComponent
-                        v-for="link in turnoutLinks.values()"
-                        :key="link.id"
-                        :start-seg-active="link.startActive"
-                        :end-seg-active="link.endActive"
-                        :start="
-                            turnouts.get(link.start)?.coordinate ||
-                            destinations.get(link.start)?.coordinate || {
-                                x: -5,
-                                y: -5,
-                            }
-                        "
-                        :points="link.points"
-                        :end="
-                            turnouts.get(link.end)?.coordinate || {
-                                x: -5,
-                                y: -5,
-                            }
-                        "
-                        :active-route="usedLinks.get(link.id) !== undefined"
-                    />
-                    <TurnoutComponent
-                        v-for="turnout in turnouts.values()"
-                        :key="turnout.id"
-                        :coordinate="turnout.coordinate"
-                        :active-route="
-                            usedTurnouts.get(turnout.id) !== undefined
-                        "
-                        @click="setTurnout(turnout.id)"
-                    />
-                    <!-- @click="showAlert('clicked')" -->
-                    <DestinationComponent
-                        v-for="destination in destinations.values()"
-                        :key="destination.id"
-                        :state="
-                            destinationStates.get(destination.id) ||
-                            DestinationState.inactive
-                        "
-                        :coordinate="destination.coordinate"
-                        @click="toggleDestination(destination)"
-                    />
-                </g>
+            <svg
+                id="mapSvg"
+                class="h-full w-full"
+                viewBox="0 0 100 100"
+                ref="svgRef"
+            >
+                <!-- <g id="panzoom" ref="svgRef"> -->
+                <ConnectorComponent
+                    v-for="link in turnoutLinks.values()"
+                    :key="link.id"
+                    :start-seg-active="link.startActive"
+                    :end-seg-active="link.endActive"
+                    :start="
+                        turnouts.get(link.start)?.coordinate ||
+                        destinations.get(link.start)?.coordinate || {
+                            x: -5,
+                            y: -5,
+                        }
+                    "
+                    :points="link.points"
+                    :end="
+                        turnouts.get(link.end)?.coordinate || {
+                            x: -5,
+                            y: -5,
+                        }
+                    "
+                    :active-route="usedLinks.get(link.id) !== undefined"
+                />
+                <TurnoutComponent
+                    v-for="turnout in turnouts.values()"
+                    :key="turnout.id"
+                    :coordinate="turnout.coordinate"
+                    :active-route="usedTurnouts.get(turnout.id) !== undefined"
+                    @click="setTurnout(turnout.id)"
+                />
+                <!-- @click="showAlert('clicked')" -->
+                <DestinationComponent
+                    v-for="destination in destinations.values()"
+                    :key="destination.id"
+                    :state="
+                        destinationStates.get(destination.id) ||
+                        DestinationState.inactive
+                    "
+                    :coordinate="destination.coordinate"
+                    @click="toggleDestination(destination)"
+                />
+                <!-- </g> -->
             </svg>
         </div>
         <div
@@ -187,6 +202,27 @@ onMounted(() => {
                 <path
                     fill-rule="evenodd"
                     d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5zM10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5z"
+                />
+            </svg>
+        </div>
+        <div
+            class="absolute bottom-0 right-0 mb-2 mr-2 h-10 w-10 rounded-full border-2 border-borderColor-300 bg-primary-200 p-1 pl-2 focus:bg-accent-400"
+            @click="homePanZoom()"
+        >
+            <!-- Bootstrap icon: house-fill -->
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="h-full w-full"
+                viewBox="0 0 18 18"
+            >
+                <path
+                    d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"
+                />
+                <path
+                    d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"
                 />
             </svg>
         </div>
