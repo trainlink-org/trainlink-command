@@ -16,38 +16,31 @@ import { useSocketStore } from '@/stores/socket';
 const socket = useSocketStore().socketRef;
 const router = useRouter();
 
-const windowWidth = ref(window.innerWidth);
+// const windowWidth = ref(window.innerWidth);
 
-const onWidthChange = () => {
-    windowWidth.value = window.innerWidth;
-    svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
-    svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
-};
+// const onWidthChange = () => {
+// windowWidth.value = window.innerWidth;
+// svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
+// svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
+// };
 onMounted(() => {
-    window.addEventListener('resize', onWidthChange);
-    svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
-    svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
+    // window.addEventListener('resize', onWidthChange);
+    // svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
+    // svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
     if (window.matchMedia('(pointer: coarse)').matches) {
         isTouchScreen.value = true;
         console.log('Touchscreen');
     }
 });
 
-onUnmounted(() => window.removeEventListener('resize', onWidthChange));
+// onUnmounted(() => window.removeEventListener('resize', onWidthChange));
 
 function setTurnout(id: number) {
     const turnout = turnoutStore.getTurnout(id);
     if (turnout) {
-        switch (
-            turnout.state //TODO refactor with an if block
-        ) {
-            case TurnoutState.thrown:
-                turnout.state = TurnoutState.closed;
-                break;
-            case TurnoutState.closed:
-                turnout.state = TurnoutState.thrown;
-                break;
-        }
+        if (turnout.state === TurnoutState.thrown)
+            turnout.state = TurnoutState.closed;
+        else turnout.state = TurnoutState.thrown;
         setLinkStates(turnout.id, turnout.state);
         socket.emit('routes/setTurnout', turnout.id, turnout.state);
     }
@@ -73,32 +66,56 @@ socket.on('routes/routeUpdate', (route) => {
     });
 });
 
-const selectedDestinationsNum = ref(0);
-const firstDestination: Ref<Destination | undefined> = ref(undefined);
+// const selectedDestinationsNum = ref(0);
+// const firstDestination: Ref<Destination | undefined> = ref(undefined);
 
-function toggleDestination(destination: Destination) {
-    if (destination !== firstDestination.value) {
-        selectedDestinationsNum.value++;
-        if (selectedDestinationsNum.value === 2 && firstDestination.value) {
+const selectedDestinations: Ref<Destination[]> = ref([]);
+
+// function toggleDestination(destination: Destination) {
+//     if (destination !== firstDestination.value) {
+//         selectedDestinationsNum.value++;
+//         if (selectedDestinationsNum.value === 2 && firstDestination.value) {
+//             socket.emit(
+//                 'routes/setRoute',
+//                 firstDestination.value.id,
+//                 destination.id,
+//             );
+//             destinationStates.set(
+//                 firstDestination.value.id,
+//                 DestinationState.inactive,
+//             );
+//             selectedDestinationsNum.value = 0;
+//             firstDestination.value = undefined;
+//         } else {
+//             firstDestination.value = destination;
+//             destinationStates.set(destination.id, DestinationState.selected);
+//         }
+//     } else {
+//         destinationStates.set(destination.id, DestinationState.inactive);
+//         firstDestination.value = undefined;
+//         selectedDestinationsNum.value = 0;
+//     }
+// }
+function toggleDestinationNew(destination: Destination) {
+    if (!selectedDestinations.value.includes(destination)) {
+        selectedDestinations.value.push(destination);
+        if (selectedDestinations.value.length === 2) {
             socket.emit(
                 'routes/setRoute',
-                firstDestination.value.id,
-                destination.id,
+                selectedDestinations.value[0].id,
+                selectedDestinations.value[1].id,
             );
             destinationStates.set(
-                firstDestination.value.id,
+                selectedDestinations.value[0].id,
                 DestinationState.inactive,
             );
-            selectedDestinationsNum.value = 0;
-            firstDestination.value = undefined;
+            selectedDestinations.value = [];
         } else {
-            firstDestination.value = destination;
             destinationStates.set(destination.id, DestinationState.selected);
         }
     } else {
         destinationStates.set(destination.id, DestinationState.inactive);
-        firstDestination.value = undefined;
-        selectedDestinationsNum.value = 0;
+        selectedDestinations.value = [];
     }
 }
 import panzoom, { PanZoom } from 'panzoom';
@@ -174,7 +191,7 @@ function homePanZoom() {
                     @click="setTurnout(turnout.id)"
                 />
                 <!-- @click="showAlert('clicked')" -->
-                <DestinationComponent
+                <!-- <DestinationComponent
                     v-for="destination in turnoutStore.allDestinations"
                     :key="destination.id"
                     :state="
@@ -182,8 +199,22 @@ function homePanZoom() {
                         DestinationState.inactive
                     "
                     :coordinate="destination.coordinate"
-                    @click="toggleDestination(destination)"
-                />
+                    @click="toggleDestinationNew(destination)"
+                /> -->
+                <!-- <DestinationComponent
+                    v-for="destination in turnoutStore.allDestinations"
+                    :key="destination.id"
+                    :selected="
+                        destinationStates.get(destination.id) ===
+                        DestinationState.selected
+                    "
+                    :active="
+                        destinationStates.get(destination.id) ===
+                        DestinationState.active
+                    "
+                    :coordinate="destination.coordinate"
+                    @click="toggleDestinationNew(destination)"
+                /> -->
                 <!-- </g> -->
             </svg>
         </div>

@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { useLocoStore } from '~/stores/locos';
-import { Loco } from '@trainlink-org/trainlink-types';
+import { isDestination, isTurnout, Loco } from '@trainlink-org/trainlink-types';
 import { useConfigStore } from '~/stores/config';
 import type {
     ServerToClientEvents,
@@ -146,6 +146,11 @@ export default function () {
 
     socket.on('hardware/newActiveDevice', (device) => {
         configStore.device = device;
+    });
+
+    socket.on('routes/mapPointUpdate', (object) => {
+        if (isTurnout(object)) turnoutStore.updateTurnout(object);
+        else if (isDestination(object)) turnoutStore.updateDestination(object);
     });
 
     return { socket };

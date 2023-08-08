@@ -44,6 +44,14 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         connections.value.set(turnoutLink.id, turnoutLink);
     }
 
+    function updateTurnout(turnout: Turnout) {
+        turnouts.value.set(turnout.id, turnout);
+    }
+
+    function updateDestination(destination: Destination) {
+        destinations.value.set(destination.id, destination);
+    }
+
     return {
         allTurnouts,
         allDestinations,
@@ -54,6 +62,8 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         addTurnout,
         addDestination,
         addTurnoutLink,
+        updateTurnout,
+        updateDestination,
     };
 });
 if (import.meta.hot) {

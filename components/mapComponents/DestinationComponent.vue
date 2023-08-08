@@ -11,6 +11,8 @@ import {
 const props = defineProps({
     coordinate: { type: Object as () => Coordinate, required: true },
     state: { type: String as () => DestinationState, required: true },
+    active: { type: Boolean, required: true },
+    selected: { type: Boolean, required: true },
 });
 const xCoord = computed(() => {
     return props.coordinate.x;
@@ -24,10 +26,10 @@ const yCoord = computed(() => {
     <rect
         class="hover:fill-primary-400"
         :class="
-            props.state === DestinationState.selected
+            props.active
+                ? 'fill-blue-600'
+                : props.selected
                 ? 'fill-red-600'
-                : props.state === DestinationState.active
-                ? 'fill-blue-60x0'
                 : 'fill-black'
         "
         :x="xCoord - 1"
@@ -35,6 +37,13 @@ const yCoord = computed(() => {
         :width="2"
         :height="2"
     />
+    <!-- :class="
+            props.state === DestinationState.selected
+                ? 'fill-red-600'
+                : props.state === DestinationState.active
+                ? 'fill-blue-600'
+                : 'fill-black'
+        " -->
     <!-- :x="xCoord - calculateSize(2) / 2"
         :y="yCoord - calculateSize(2) / 2"
         :width="calculateSize(2)"
