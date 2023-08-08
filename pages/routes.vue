@@ -8,13 +8,7 @@ import {
     DestinationState,
 } from '../components/mapComponents/shared';
 
-// import TurnoutComponent from '../components/mapComponents/TurnoutComponent.vue';
-// import ConnectorComponent from '../components/mapComponents/ConnectorComponent.vue';
-// import DestinationComponent from '../components/mapComponents/DestinationComponent.vue';
-
-import { turnoutLinks, turnouts, destinations } from '@/utils/main';
 import { TurnoutState, type Destination } from '@trainlink-org/trainlink-types';
-// import { socket } from '@/utils/socketHelper';
 
 import { usedLinks, usedTurnouts, destinationStates } from '@/utils/main';
 import { useSocketStore } from '@/stores/socket';
@@ -42,7 +36,7 @@ onMounted(() => {
 onUnmounted(() => window.removeEventListener('resize', onWidthChange));
 
 function setTurnout(id: number) {
-    const turnout = turnouts.get(id);
+    const turnout = turnoutStore.getTurnout(id);
     if (turnout) {
         switch (
             turnout.state //TODO refactor with an if block
@@ -59,13 +53,9 @@ function setTurnout(id: number) {
     }
 }
 
-// const viewBox = computed(() => {
-//     return `0 0 ${svgWidth.value} ${svgHeight.value}`;
-// });
-
 function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     console.log(`${turnoutID}: ${turnoutState}`);
-    const turnout = turnouts.get(turnoutID);
+    const turnout = turnoutStore.getTurnout(turnoutID);
     if (turnout) {
         turnout.state = turnoutState;
         setLinkStates(turnoutID, turnoutState);
@@ -121,9 +111,17 @@ onMounted(() => {
             beforeWheel: function (e) {
                 return !e.ctrlKey;
             },
+            zoomDoubleClickSpeed: 1,
+            onDoubleClick: function (e) {
+                return false;
+            },
         });
     }
 });
+
+import { useTurnoutStore } from '@/stores/turnouts';
+
+const turnoutStore = useTurnoutStore();
 
 function homePanZoom() {
     console.log(panzoomInstance.value?.getTransform());
@@ -148,20 +146,20 @@ function homePanZoom() {
             >
                 <!-- <g id="panzoom" ref="svgRef"> -->
                 <ConnectorComponent
-                    v-for="link in turnoutLinks.values()"
+                    v-for="link in turnoutStore.allTurnoutLinks"
                     :key="link.id"
                     :start-seg-active="link.startActive"
                     :end-seg-active="link.endActive"
                     :start="
-                        turnouts.get(link.start)?.coordinate ||
-                        destinations.get(link.start)?.coordinate || {
+                        turnoutStore.getTurnout(link.start)?.coordinate ||
+                        turnoutStore.getDestination(link.start)?.coordinate || {
                             x: -5,
                             y: -5,
                         }
                     "
                     :points="link.points"
                     :end="
-                        turnouts.get(link.end)?.coordinate || {
+                        turnoutStore.getTurnout(link.end)?.coordinate || {
                             x: -5,
                             y: -5,
                         }
@@ -169,7 +167,7 @@ function homePanZoom() {
                     :active-route="usedLinks.get(link.id) !== undefined"
                 />
                 <TurnoutComponent
-                    v-for="turnout in turnouts.values()"
+                    v-for="turnout in turnoutStore.allTurnouts"
                     :key="turnout.id"
                     :coordinate="turnout.coordinate"
                     :active-route="usedTurnouts.get(turnout.id) !== undefined"
@@ -177,7 +175,7 @@ function homePanZoom() {
                 />
                 <!-- @click="showAlert('clicked')" -->
                 <DestinationComponent
-                    v-for="destination in destinations.values()"
+                    v-for="destination in turnoutStore.allDestinations"
                     :key="destination.id"
                     :state="
                         destinationStates.get(destination.id) ||

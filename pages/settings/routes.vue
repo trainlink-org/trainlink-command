@@ -25,7 +25,9 @@ import {
 // import ModalComponent from '../ModalComponent.vue';
 // import { socket } from '@/utils/socketHelper';
 import { useSocketStore } from '@/stores/socket';
+import { useTurnoutStore } from '@/stores/turnouts';
 const socket = useSocketStore().socketRef;
+const turnoutStore = useTurnoutStore();
 
 const changesMade = ref(false);
 
@@ -67,7 +69,7 @@ const points = computed(() => {
     console.log(
         points
             .map((point) => `{x: ${point.coord.x}, y: ${point.coord.y}}`)
-            .join(',')
+            .join(','),
     );
     return points;
 });
@@ -76,7 +78,7 @@ const beingMoved: Ref<number | null> = ref(null);
 
 function drag(
     id: number,
-    { offsetX, offsetY }: { offsetX: number; offsetY: number }
+    { offsetX, offsetY }: { offsetX: number; offsetY: number },
 ) {
     console.log('Drag');
     const offset = offsets.get(id) || { x: 3, y: 3 };
@@ -113,7 +115,7 @@ function move({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
         offset.x = offsetX - dragOffset.x;
         offset.y = offsetY - dragOffset.y;
         if (beingMoved.value > 0) {
-            const turnout = turnouts.get(beingMoved.value);
+            const turnout = turnoutStore.getTurnout(beingMoved.value);
             if (turnout) {
                 turnout.connections.forEach((linkId) => {
                     const link = turnoutLinks.get(linkId);
@@ -166,7 +168,7 @@ function move({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
 
 function dragPoint(
     id: number,
-    { offsetX, offsetY }: { offsetX: number; offsetY: number }
+    { offsetX, offsetY }: { offsetX: number; offsetY: number },
 ) {
     console.log('Drag');
     const offset = pointOffsets.get(id) || { x: 3, y: 3 };
@@ -210,14 +212,14 @@ const offsets = reactive(new Map<number, Coordinate>());
 const linkStartOffsets = reactive(new Map<number, Coordinate>());
 const linkEndOffsets = reactive(new Map<number, Coordinate>());
 
-Array.from(turnouts.values()).forEach((element) => {
+turnoutStore.allTurnouts.forEach((element) => {
     offsets.set(element.id, { x: 3, y: 3 });
 });
-Array.from(destinations.values()).forEach((element) => {
+turnoutStore.allDestinations.forEach((element) => {
     offsets.set(element.id, { x: 3, y: 3 });
 });
 
-Array.from(turnoutLinks.values()).forEach((element) => {
+turnoutStore.allTurnoutLinks.forEach((element) => {
     linkStartOffsets.set(element.id, { x: 3, y: 3 });
     linkEndOffsets.set(element.id, { x: 3, y: 3 });
 });
@@ -268,9 +270,9 @@ function applyPointOffsets(points: Coordinate[]): Coordinate[] {
                 addCoords(
                     point,
                     calculateCoordInverse(
-                        pointOffsets.get(id) || { x: 0, y: 0 }
-                    )
-                )
+                        pointOffsets.get(id) || { x: 0, y: 0 },
+                    ),
+                ),
             );
         });
         return newPoints;
@@ -346,7 +348,7 @@ function createLine(ID: number) {
         const keys = Array.from(turnoutLinks.keys()).sort(
             (a: number, b: number) => {
                 return a > b ? a : b;
-            }
+            },
         );
         const nextID = keys[0] + 1;
         console.log(keys);
@@ -362,8 +364,8 @@ function createLine(ID: number) {
         });
         linkStartOffsets.set(nextID, { x: 3, y: 3 });
         linkEndOffsets.set(nextID, { x: 3, y: 3 });
-        turnouts.get(ID)?.connections.push(nextID);
-        turnouts.get(newLineStart.value)?.connections.push(nextID);
+        turnoutStore.getTurnout(ID)?.connections.push(nextID);
+        turnoutStore.getTurnout(newLineStart.value)?.connections.push(nextID);
         newLineStart.value = undefined;
     } else if (newLineStart.value === ID) {
         newLineStart.value = undefined;
@@ -379,14 +381,20 @@ function saveChanges() {
         if (value.x !== 3 || value.y !== 3) {
             let coord;
             if (id > 0) {
-                coord = turnouts.get(id)?.coordinate || { x: 0, y: 0 };
+                coord = turnoutStore.getTurnout(id)?.coordinate || {
+                    x: 0,
+                    y: 0,
+                };
             } else {
-                coord = destinations.get(id)?.coordinate || { x: 0, y: 0 };
+                coord = turnoutStore.getDestination(id)?.coordinate || {
+                    x: 0,
+                    y: 0,
+                };
             }
             socket.emit(
                 'config/routes/changeObjectCoordinate',
                 id,
-                addCoords(coord, calculateCoordInverse(value))
+                addCoords(coord, calculateCoordInverse(value)),
             );
         }
     });
@@ -423,29 +431,33 @@ function discardChanges() {
                 :key="link.id"
                 :start="
                     addCoords(
-                        turnouts.get(link.start)?.coordinate ||
-                            destinations.get(link.start)?.coordinate || {
+                        turnoutStore.getTurnout(link.start)?.coordinate ||
+                            turnoutStore.getDestination(link.start)
+                                ?.coordinate || {
                                 x: -5,
                                 y: -5,
                             },
                         calculateCoordInverse(
-                            linkStartOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
+                            linkStartOffsets.get(link.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :points="applyPointOffsets(link.points)"
                 :end="
                     addCoords(
-                        turnouts.get(link.end)?.coordinate || { x: -5, y: -5 },
+                        turnoutStore.getTurnout(link.end)?.coordinate || {
+                            x: -5,
+                            y: -5,
+                        },
                         calculateCoordInverse(
-                            linkEndOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
+                            linkEndOffsets.get(link.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :active-route="false"
             />
             <TurnoutComponent
-                v-for="turnout in turnouts.values()"
+                v-for="turnout in turnoutStore.allTurnouts"
                 :key="turnout.id"
                 :coordinate="{
                     x:
@@ -466,8 +478,17 @@ function discardChanges() {
                         ? 'fill-red-500'
                         : 'fill-black'
                 "
-                @mousedown="(event: MouseEvent) => lineEditMode ? createLine(turnout.id) : drag(turnout.id, event)"
-                @mouseup="(event: MouseEvent) => { if (!lineEditMode) drop() }"
+                @mousedown="
+                    (event: MouseEvent) =>
+                        lineEditMode
+                            ? createLine(turnout.id)
+                            : drag(turnout.id, event)
+                "
+                @mouseup="
+                    (event: MouseEvent) => {
+                        if (!lineEditMode) drop();
+                    }
+                "
             />
             <DestinationComponent
                 v-for="destination in destinations.values()"
@@ -478,8 +499,8 @@ function discardChanges() {
                     addCoords(
                         destination.coordinate,
                         calculateCoordInverse(
-                            offsets.get(destination.id) || { x: 0, y: 0 }
-                        )
+                            offsets.get(destination.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :class="
@@ -497,8 +518,8 @@ function discardChanges() {
                     addCoords(
                         point.coord,
                         calculateCoordInverse(
-                            pointOffsets.get(point.id) || { x: 0, y: 0 }
-                        )
+                            pointOffsets.get(point.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 @mousedown="(event: MouseEvent) => dragPoint(point.id, event)"

@@ -7,11 +7,13 @@ import type {
     ClientToServerEvents,
 } from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
+import { useTurnoutStore } from '@/stores/turnouts';
 
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);
     const configStore = useConfigStore(context.$pinia);
+    const turnoutStore = useTurnoutStore(context.$pinia);
     const runtimeConfig = useRuntimeConfig();
     const socket = useSocketStore().socketRef;
 
@@ -28,7 +30,7 @@ export default function () {
             'metadata/handshake',
             runtimeConfig.public.name,
             runtimeConfig.public.productName,
-            runtimeConfig.public.version
+            runtimeConfig.public.version,
         );
     });
 
@@ -43,7 +45,7 @@ export default function () {
             configStore.serverName = serverName;
             configStore.serverProductName = serverProductName;
             configStore.serverVersion = serverVersion;
-        }
+        },
     );
 
     socket.on('metadata/initialState/locos', async (locosState) => {
@@ -62,6 +64,18 @@ export default function () {
         }
     });
 
+    socket.on('metadata/initialState/turnouts', (packet) => {
+        packet.turnouts.forEach((turnout) => {
+            turnoutStore.addTurnout(turnout);
+        });
+        packet.destinations.forEach((destination) => {
+            turnoutStore.addDestination(destination);
+        });
+        packet.links.forEach((turnoutLinks) => {
+            turnoutStore.addTurnoutLink(turnoutLinks);
+        });
+    });
+
     socket.on('metadata/availableDrivers', (drivers) => {
         configStore.availableDrivers = drivers;
     });
@@ -69,7 +83,7 @@ export default function () {
     socket.on('automation/fetchRunningResponse', (automations) => {
         console.log('Updating locked');
         const usedLocos = automations.map(
-            (automation) => automation.locoAddress
+            (automation) => automation.locoAddress,
         );
         console.log(usedLocos);
         locoStore.allLocos.forEach((loco) => {
