@@ -13,7 +13,7 @@ import type {
     PID,
     RunningAutomationClient,
 } from '@trainlink-org/trainlink-types';
-import { setLinkStates } from '@/components/mapComponents/shared';
+// import { setLinkStates } from '@/components/mapComponents/shared';
 import {
     usedDestinations,
     destinationStates,
@@ -28,7 +28,7 @@ export const useSocketStore = defineStore('socket', () => {
         // 'http://' +
         //     (window !== undefined ? window.location.hostname : 'localhost') +
         //     ':6868'
-        'http://localhost:6868'
+        'http://localhost:6868',
     );
     socket.on('connect', () => {
         console.log('Socket store connected');
@@ -41,7 +41,7 @@ export const useSocketStore = defineStore('socket', () => {
         });
         packet.turnouts.forEach((value) => {
             turnouts.set(value.id, value);
-            setLinkStates(value.id, value.state);
+            // setLinkStates(value.id, value.state);
         });
         packet.destinations.forEach((value) => {
             destinations.set(value.id, value);
@@ -110,7 +110,7 @@ export const useSocketStore = defineStore('socket', () => {
             links.forEach((link) => {
                 usedLinks.delete(link);
             });
-        }
+        },
     );
 
     // socket.on('config/newLocoAdded', (loco) => {

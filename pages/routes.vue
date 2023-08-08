@@ -4,7 +4,7 @@ import {
     isTouchScreen,
     svgWidth,
     svgHeight,
-    setLinkStates,
+    // setLinkStates,
     DestinationState,
 } from '../components/mapComponents/shared';
 
@@ -41,7 +41,7 @@ function setTurnout(id: number) {
         if (turnout.state === TurnoutState.thrown)
             turnout.state = TurnoutState.closed;
         else turnout.state = TurnoutState.thrown;
-        setLinkStates(turnout.id, turnout.state);
+        // setLinkStates(turnout.id, turnout.state);
         socket.emit('routes/setTurnout', turnout.id, turnout.state);
     }
 }
@@ -51,7 +51,7 @@ function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     const turnout = turnoutStore.getTurnout(turnoutID);
     if (turnout) {
         turnout.state = turnoutState;
-        setLinkStates(turnoutID, turnoutState);
+        // setLinkStates(turnoutID, turnoutState);
     }
 }
 
