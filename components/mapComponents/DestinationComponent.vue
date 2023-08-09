@@ -10,7 +10,7 @@ import {
 
 const props = defineProps({
     coordinate: { type: Object as () => Coordinate, required: true },
-    state: { type: String as () => DestinationState, required: true },
+    // state: { type: String as () => DestinationState, required: true },
     active: { type: Boolean, required: true },
     selected: { type: Boolean, required: true },
 });

@@ -153,5 +153,7 @@ export default function () {
         else if (isDestination(object)) turnoutStore.updateDestination(object);
     });
 
+    socket.on('routes/turnoutLinkUpdate', (turnoutLink) => {});
+
     return { socket };
 }
