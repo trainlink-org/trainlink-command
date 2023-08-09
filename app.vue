@@ -20,7 +20,9 @@ useSocket();
 </script>
 
 <template>
-    <div class="h-screen bg-white">
+    <div
+        class="h-screen bg-background dark:bg-background-dark-600 dark:text-primary-dark-200"
+    >
         <NavComponent />
         <!-- <RouterView/> -->
         <NuxtPage />

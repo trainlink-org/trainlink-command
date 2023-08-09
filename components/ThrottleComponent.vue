@@ -91,10 +91,10 @@ const stopStyles = computed(() => {
 
 <template>
     <div
-        class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-300"
+        class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-300 dark:border-borderColor-dark-800 dark:bg-background-dark-700"
     >
         <div
-            class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
+            class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 dark:bg-primary-dark-600 p-1"
             :class="activeLoco.locked ? 'bg-primary-200' : ''"
         >
             <ButtonComponent

@@ -14,10 +14,14 @@ module.exports = {
         extend: {
             colors: {
                 primary: colors.zinc,
+                'primary-dark': colors.neutral,
                 background: colors.white,
+                'background-dark': colors.neutral,
                 accent: colors.blue,
+                'accent-dark': colors.blue,
                 // accent: '#0e7490AA',
                 borderColor: colors.zinc,
+                'borderColor-dark': colors.neutral,
                 // primary: '#000000'
             },
         },

@@ -42,7 +42,7 @@ const socket = useSocketStore().socketRef;
         </label>
     </div>
     <div
-        class="absolute top-0 left-0 hidden h-10 w-full flex-row items-center justify-evenly border-b-2 border-borderColor-300 sm:flex"
+        class="absolute top-0 left-0 hidden h-10 w-full flex-row items-center justify-evenly border-b-2 border-borderColor-300 dark:border-borderColor-dark-800 sm:flex"
     >
         <RouterLink class="w-40 text-center" to="/"> Throttle </RouterLink>
         <RouterLink class="w-40 text-center" to="/routes"> Routes </RouterLink>
