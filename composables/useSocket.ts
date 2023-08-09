@@ -28,7 +28,7 @@ export default function () {
             'metadata/handshake',
             runtimeConfig.public.name,
             runtimeConfig.public.productName,
-            runtimeConfig.public.version
+            runtimeConfig.public.version,
         );
     });
 
@@ -43,7 +43,7 @@ export default function () {
             configStore.serverName = serverName;
             configStore.serverProductName = serverProductName;
             configStore.serverVersion = serverVersion;
-        }
+        },
     );
 
     socket.on('metadata/initialState/locos', async (locosState) => {
@@ -69,7 +69,7 @@ export default function () {
     socket.on('automation/fetchRunningResponse', (automations) => {
         console.log('Updating locked');
         const usedLocos = automations.map(
-            (automation) => automation.locoAddress
+            (automation) => automation.locoAddress,
         );
         console.log(usedLocos);
         locoStore.allLocos.forEach((loco) => {

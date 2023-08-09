@@ -67,7 +67,7 @@ const points = computed(() => {
     console.log(
         points
             .map((point) => `{x: ${point.coord.x}, y: ${point.coord.y}}`)
-            .join(',')
+            .join(','),
     );
     return points;
 });
@@ -76,7 +76,7 @@ const beingMoved: Ref<number | null> = ref(null);
 
 function drag(
     id: number,
-    { offsetX, offsetY }: { offsetX: number; offsetY: number }
+    { offsetX, offsetY }: { offsetX: number; offsetY: number },
 ) {
     console.log('Drag');
     const offset = offsets.get(id) || { x: 3, y: 3 };
@@ -166,7 +166,7 @@ function move({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
 
 function dragPoint(
     id: number,
-    { offsetX, offsetY }: { offsetX: number; offsetY: number }
+    { offsetX, offsetY }: { offsetX: number; offsetY: number },
 ) {
     console.log('Drag');
     const offset = pointOffsets.get(id) || { x: 3, y: 3 };
@@ -268,9 +268,9 @@ function applyPointOffsets(points: Coordinate[]): Coordinate[] {
                 addCoords(
                     point,
                     calculateCoordInverse(
-                        pointOffsets.get(id) || { x: 0, y: 0 }
-                    )
-                )
+                        pointOffsets.get(id) || { x: 0, y: 0 },
+                    ),
+                ),
             );
         });
         return newPoints;
@@ -346,7 +346,7 @@ function createLine(ID: number) {
         const keys = Array.from(turnoutLinks.keys()).sort(
             (a: number, b: number) => {
                 return a > b ? a : b;
-            }
+            },
         );
         const nextID = keys[0] + 1;
         console.log(keys);
@@ -386,7 +386,7 @@ function saveChanges() {
             socket.emit(
                 'config/routes/changeObjectCoordinate',
                 id,
-                addCoords(coord, calculateCoordInverse(value))
+                addCoords(coord, calculateCoordInverse(value)),
             );
         }
     });
@@ -429,8 +429,8 @@ function discardChanges() {
                                 y: -5,
                             },
                         calculateCoordInverse(
-                            linkStartOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
+                            linkStartOffsets.get(link.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :points="applyPointOffsets(link.points)"
@@ -438,8 +438,8 @@ function discardChanges() {
                     addCoords(
                         turnouts.get(link.end)?.coordinate || { x: -5, y: -5 },
                         calculateCoordInverse(
-                            linkEndOffsets.get(link.id) || { x: 0, y: 0 }
-                        )
+                            linkEndOffsets.get(link.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :active-route="false"
@@ -466,8 +466,17 @@ function discardChanges() {
                         ? 'fill-red-500'
                         : 'fill-black'
                 "
-                @mousedown="(event: MouseEvent) => lineEditMode ? createLine(turnout.id) : drag(turnout.id, event)"
-                @mouseup="(event: MouseEvent) => { if (!lineEditMode) drop() }"
+                @mousedown="
+                    (event: MouseEvent) =>
+                        lineEditMode
+                            ? createLine(turnout.id)
+                            : drag(turnout.id, event)
+                "
+                @mouseup="
+                    (event: MouseEvent) => {
+                        if (!lineEditMode) drop();
+                    }
+                "
             />
             <DestinationComponent
                 v-for="destination in destinations.values()"
@@ -478,8 +487,8 @@ function discardChanges() {
                     addCoords(
                         destination.coordinate,
                         calculateCoordInverse(
-                            offsets.get(destination.id) || { x: 0, y: 0 }
-                        )
+                            offsets.get(destination.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 :class="
@@ -497,8 +506,8 @@ function discardChanges() {
                     addCoords(
                         point.coord,
                         calculateCoordInverse(
-                            pointOffsets.get(point.id) || { x: 0, y: 0 }
-                        )
+                            pointOffsets.get(point.id) || { x: 0, y: 0 },
+                        ),
                     )
                 "
                 @mousedown="(event: MouseEvent) => dragPoint(point.id, event)"

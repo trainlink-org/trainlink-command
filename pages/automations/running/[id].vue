@@ -12,12 +12,12 @@ const router = useRouter();
 const socket = useSocketStore().socketRef;
 
 const script = ref(
-    runningAutomations.value.get((route.params.id as string).replace('-', '#'))
+    runningAutomations.value.get((route.params.id as string).replace('-', '#')),
 );
 
 socket.on('automation/fetchRunningResponse', () => {
     script.value = runningAutomations.value.get(
-        (route.params.id as string).replace('-', '#')
+        (route.params.id as string).replace('-', '#'),
     );
 });
 </script>
@@ -72,7 +72,18 @@ socket.on('automation/fetchRunningResponse', () => {
             <button
                 v-if="script && script.status === AutomationStatus.running"
                 class="group flex h-7 w-1/6 items-center rounded-full hover:bg-primary-200 active:bg-blue-400"
-                @click="(event) => { if (script) socket.emit('automation/pauseAutomation', script.pid); script = runningAutomations.get((route.params.id as string).replace('-', '#')); }"
+                @click="
+                    (event) => {
+                        if (script)
+                            socket.emit(
+                                'automation/pauseAutomation',
+                                script.pid,
+                            );
+                        script = runningAutomations.get(
+                            (route.params.id as string).replace('-', '#'),
+                        );
+                    }
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +101,18 @@ socket.on('automation/fetchRunningResponse', () => {
             <button
                 v-if="script && script.status === AutomationStatus.paused"
                 class="group flex h-7 w-1/6 items-center rounded-full hover:bg-primary-200 active:bg-green-400"
-                @click="(event) => { if (script) socket.emit('automation/resumeAutomation', script.pid); script = runningAutomations.get((route.params.id as string).replace('-', '#')); }"
+                @click="
+                    (event) => {
+                        if (script)
+                            socket.emit(
+                                'automation/resumeAutomation',
+                                script.pid,
+                            );
+                        script = runningAutomations.get(
+                            (route.params.id as string).replace('-', '#'),
+                        );
+                    }
+                "
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

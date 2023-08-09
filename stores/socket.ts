@@ -28,7 +28,7 @@ export const useSocketStore = defineStore('socket', () => {
         // 'http://' +
         //     (window !== undefined ? window.location.hostname : 'localhost') +
         //     ':6868'
-        'http://localhost:6868'
+        'http://localhost:6868',
     );
     socket.on('connect', () => {
         console.log('Socket store connected');
@@ -110,7 +110,7 @@ export const useSocketStore = defineStore('socket', () => {
             links.forEach((link) => {
                 usedLinks.delete(link);
             });
-        }
+        },
     );
 
     // socket.on('config/newLocoAdded', (loco) => {

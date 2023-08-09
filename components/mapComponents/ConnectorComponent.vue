@@ -19,7 +19,7 @@ const props = defineProps({
 });
 const path = computed(() => {
     let path = `M ${calculateXCoord(midPoints.startMid.x)} ${calculateYCoord(
-        midPoints.startMid.y
+        midPoints.startMid.y,
     )}`;
 
     Array.from(props.points).forEach((point) => {
@@ -27,28 +27,28 @@ const path = computed(() => {
         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
     path = `${path} L ${calculateXCoord(midPoints.endMid.x)} ${calculateYCoord(
-        midPoints.endMid.y
+        midPoints.endMid.y,
     )}`;
     return path;
 });
 const startPath = computed(() => {
     return `M ${calculateXCoord(props.start.x)} ${calculateYCoord(
-        props.start.y
+        props.start.y,
     )} L ${calculateXCoord(midPoints.startMid.x)} ${calculateYCoord(
-        midPoints.startMid.y
+        midPoints.startMid.y,
     )}`;
 });
 const endPath = computed(() => {
     return `M ${calculateXCoord(props.end.x)} ${calculateYCoord(
-        props.end.y
+        props.end.y,
     )} L ${calculateXCoord(midPoints.endMid.x)} ${calculateYCoord(
-        midPoints.endMid.y
+        midPoints.endMid.y,
     )}`;
 });
 function calculateMidPoints(
     startPoint: Coordinate,
     points: Coordinate[],
-    endPoint: Coordinate
+    endPoint: Coordinate,
 ) {
     let innerStart: Coordinate;
     let innerEnd: Coordinate;
@@ -65,7 +65,7 @@ function calculateMidPoints(
     if (
         Math.sqrt(
             Math.pow(startPoint.x - endPoint.x, 2) +
-                Math.pow(startPoint.y - endPoint.y, 2)
+                Math.pow(startPoint.y - endPoint.y, 2),
         ) <= 5
     ) {
         console.log('Start and end too close!');
@@ -80,14 +80,14 @@ function calculateMidPoints(
     } else {
         {
             const angle = Math.atan(
-                (innerStart.x - startPoint.x) / (innerStart.y - startPoint.y)
+                (innerStart.x - startPoint.x) / (innerStart.y - startPoint.y),
             );
             const yLength = Math.cos(angle) * 5;
             const xLength = Math.sqrt(25 - Math.pow(yLength, 2));
             console.log(
                 `Start: ${startPoint.y}, innerStart: ${
                     innerStart.y
-                }\n\t${yLength} -> ${startPoint.y + yLength}`
+                }\n\t${yLength} -> ${startPoint.y + yLength}`,
             );
             let xPoint = startPoint.x + xLength;
             let yPoint = startPoint.y + yLength;
@@ -124,7 +124,7 @@ function calculateMidPoints(
         }
         {
             const angle = Math.atan(
-                (innerEnd.x - endPoint.x) / (innerEnd.y - endPoint.y)
+                (innerEnd.x - endPoint.x) / (innerEnd.y - endPoint.y),
             );
             const yLength = Math.cos(angle) * 5;
             const xLength = Math.sqrt(25 - Math.pow(yLength, 2));
@@ -163,7 +163,7 @@ function calculateMidPoints(
         if (
             Math.sqrt(
                 Math.pow(startPoint.x - innerStart.x, 2) +
-                    Math.pow(startPoint.y - innerStart.y, 2)
+                    Math.pow(startPoint.y - innerStart.y, 2),
             ) <= 5
         ) {
             newStartPoint = {
@@ -174,7 +174,7 @@ function calculateMidPoints(
         if (
             Math.sqrt(
                 Math.pow(endPoint.x - innerEnd.x, 2) +
-                    Math.pow(endPoint.y - innerEnd.y, 2)
+                    Math.pow(endPoint.y - innerEnd.y, 2),
             ) <= 5
         ) {
             newEndPoint = {
