@@ -55,7 +55,7 @@ function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     }
 }
 
-socket.on('routes/turnoutUpdate', (turnoutID, turnoutState) => {
+socket.on('routes/turnoutStateUpdate', (turnoutID, turnoutState) => {
     console.log('TurnoutUpdate');
     updateTurnout(turnoutID, turnoutState);
 });
@@ -190,18 +190,7 @@ function homePanZoom() {
                     :active-route="usedTurnouts.get(turnout.id) !== undefined"
                     @click="setTurnout(turnout.id)"
                 />
-                <!-- @click="showAlert('clicked')" -->
-                <!-- <DestinationComponent
-                    v-for="destination in turnoutStore.allDestinations"
-                    :key="destination.id"
-                    :state="
-                        destinationStates.get(destination.id) ||
-                        DestinationState.inactive
-                    "
-                    :coordinate="destination.coordinate"
-                    @click="toggleDestinationNew(destination)"
-                /> -->
-                <!-- <DestinationComponent
+                <DestinationComponent
                     v-for="destination in turnoutStore.allDestinations"
                     :key="destination.id"
                     :selected="
@@ -214,7 +203,7 @@ function homePanZoom() {
                     "
                     :coordinate="destination.coordinate"
                     @click="toggleDestinationNew(destination)"
-                /> -->
+                />
                 <!-- </g> -->
             </svg>
         </div>
