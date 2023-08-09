@@ -60,7 +60,7 @@ app.whenReady().then(async () => {
     if (!isProduction) {
         try {
             await session.defaultSession.loadExtension(
-                path.join(__dirname, '../..', '__extensions', 'vue-devtools')
+                path.join(__dirname, '../..', '__extensions', 'vue-devtools'),
             );
         } catch (err) {
             console.log('[Electron::loadExtensions] An error occurred: ', err);
@@ -104,7 +104,6 @@ app.on('window-all-closed', () => {
 
 const serverConfig: ServerConfig = {
     port: 6868,
-    name: '',
     productName: 'TrainLink Connect (Integrated Server)',
     configPath: isProduction ? app.getPath('userData') : './release',
 };

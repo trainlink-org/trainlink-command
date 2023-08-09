@@ -17,7 +17,7 @@ const props = defineProps({
 });
 const path = computed(() => {
     let path = `M ${calculateXCoord(props.start.x)} ${calculateYCoord(
-        props.start.y
+        props.start.y,
     )}`;
 
     Array.from(props.points).forEach((point) => {
@@ -25,7 +25,7 @@ const path = computed(() => {
         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
     path = `${path} L ${calculateXCoord(props.end.x)} ${calculateYCoord(
-        props.end.y
+        props.end.y,
     )}`;
     return path;
 });

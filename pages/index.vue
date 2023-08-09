@@ -11,7 +11,7 @@ import { useLocoStore } from '~/stores/locos';
 const route = useRoute();
 const router = useRouter();
 
-console.log(`Params: ${route.params}`);
+// console.log(`Params: ${route.params}`);
 
 if (process.client) {
     const windowWidth = ref(window.innerWidth);
@@ -64,6 +64,7 @@ function throttleSelector(targetThrottle: number) {
 }
 const locoStore = useLocoStore();
 
+console.log(router.options.history.state.back);
 // const returnPath = route.params.prev ? `/${route.params.prev}` : '';
 </script>
 
@@ -117,7 +118,7 @@ const locoStore = useLocoStore();
         </div>
     </div>
     <div
-        v-show="route.params.prev"
+        v-show="router.options.history.state.back !== null"
         class="absolute bottom-0 left-0 mb-2 ml-2 h-10 w-10 rounded-full border-2 border-borderColor-300 bg-primary-200 p-1 pl-2 focus:bg-accent-400"
         @click="router.back()"
     >

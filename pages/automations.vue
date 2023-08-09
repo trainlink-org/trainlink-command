@@ -56,7 +56,7 @@ async function sendFile() {
                 socket.emit(
                     'automation/fileUpload',
                     file.name,
-                    await file.text()
+                    await file.text(),
                 );
                 console.log(file.name, await file.text());
             }
@@ -114,7 +114,7 @@ function runAutomation() {
         socket.emit(
             'automation/executeAutomation',
             automationID.value,
-            allocateLocoSelect.value
+            allocateLocoSelect.value,
         );
         allocateLocoOpen.value = false;
         allocateLocoSelect.value = 'Select a Train';
@@ -217,7 +217,7 @@ const testString = ref('');
             <ul>
                 <li
                     v-for="automation in Array.from(
-                        runningAutomations.values()
+                        runningAutomations.values(),
                     )"
                     :key="automation.pid.toString()"
                     class="w-full cursor-pointer pl-2 pr-3 hover:bg-green-100"
@@ -228,7 +228,7 @@ const testString = ref('');
                             router.push('/automations');
                             router.push(
                                 '/automations/running/' +
-                                    automation.pid.replace('#', '-')
+                                    automation.pid.replace('#', '-'),
                             );
                             detailsOpen = true;
                         "
@@ -256,7 +256,7 @@ const testString = ref('');
                                     (event) => {
                                         socket.emit(
                                             'automation/pauseAutomation',
-                                            automation.pid
+                                            automation.pid,
                                         );
                                         event.stopPropagation();
                                     }
@@ -282,7 +282,7 @@ const testString = ref('');
                                     (event) => {
                                         socket.emit(
                                             'automation/resumeAutomation',
-                                            automation.pid
+                                            automation.pid,
                                         );
                                         event.stopPropagation();
                                     }
@@ -303,7 +303,7 @@ const testString = ref('');
                                 @click="
                                     socket.emit(
                                         'automation/stopAutomation',
-                                        automation.pid
+                                        automation.pid,
                                     )
                                 "
                             >
@@ -385,7 +385,7 @@ const testString = ref('');
                     v-for="script of Array.from(automationList.values()).filter(
                         (value) => {
                             return value.type !== AutomationType.sequence;
-                        }
+                        },
                     )"
                     :key="script.id"
                     class="w-full cursor-pointer pl-2 pr-3 hover:bg-primary-200 active:bg-primary-200"
@@ -443,7 +443,7 @@ const testString = ref('');
                     v-for="script of Array.from(automationList.values()).filter(
                         (value) => {
                             return value.type === AutomationType.sequence;
-                        }
+                        },
                     )"
                     :key="script.id"
                     class="w-full cursor-pointer pl-2 pr-3 hover:bg-primary-200"
@@ -483,15 +483,17 @@ const testString = ref('');
         </div>
         <div
             v-if="detailsOpen || !smallScreen"
-            class="h-5/6 w-11/12 rounded-lg border-4 md:w-4/6"
+            class="h-5/6 w-11/12 rounded-lg border-4 md:w-4/6 border-borderColor-300"
         >
             <RouterView
-                @select-loco="(id: number, type: AutomationType) => selectLoco(id, type)"
+                @select-loco="
+                    (id: number, type: AutomationType) => selectLoco(id, type)
+                "
             />
         </div>
         <div
             class="absolute bottom-0 left-0 mb-2 ml-2 h-10 w-10 rounded-full border-2 border-borderColor-300 bg-primary-200 p-1 pl-2 focus:bg-accent-400"
-            @click="router.push('/throttle/jump')"
+            @click="router.push('/')"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

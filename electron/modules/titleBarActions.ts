@@ -29,7 +29,7 @@ export default (mainWindow: BrowserWindow) => {
                     win.minimize();
                     break;
             }
-        }
+        },
     );
 
     ipcMain.handle('close:app', (event) => {
@@ -43,16 +43,16 @@ export default (mainWindow: BrowserWindow) => {
     });
 
     mainWindow.on('maximize', () =>
-        mainWindow.webContents.send('window:maximizeChanged', true)
+        mainWindow.webContents.send('window:maximizeChanged', true),
     );
     mainWindow.on('unmaximize', () =>
-        mainWindow.webContents.send('window:maximizeChanged', false)
+        mainWindow.webContents.send('window:maximizeChanged', false),
     );
     mainWindow.on('enter-full-screen', () =>
-        mainWindow.webContents.send('window:fullscreenChanged', true)
+        mainWindow.webContents.send('window:fullscreenChanged', true),
     );
     mainWindow.on('leave-full-screen', () =>
-        mainWindow.webContents.send('window:fullscreenChanged', false)
+        mainWindow.webContents.send('window:fullscreenChanged', false),
     );
 
     console.log('[-] MODULE::titleBarActions Initialized');

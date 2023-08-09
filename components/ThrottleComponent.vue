@@ -20,7 +20,7 @@ const handler: ProxyHandler<LocoClient> = {
                     'throttle/setSpeed',
                     target.address,
                     value,
-                    props.id
+                    props.id,
                 );
                 break;
             case 'direction':
@@ -91,7 +91,7 @@ const stopStyles = computed(() => {
 
 <template>
     <div
-        class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-400"
+        class="flex w-5/6 max-w-md flex-col items-center rounded-lg border-4 border-borderColor-300"
     >
         <div
             class="relative my-2 flex w-11/12 items-center justify-between rounded-lg bg-primary-200 p-1"
@@ -103,7 +103,7 @@ const stopStyles = computed(() => {
                 @click="
                     socket.emit(
                         'automation/stopAutomation',
-                        activeLoco.automationPID
+                        activeLoco.automationPID,
                     )
                 "
             >
