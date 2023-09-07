@@ -72,11 +72,13 @@
     "@pinia/nuxt": "^0.4.11",
     "@trainlink-org/trainlink-types": "^0.0.1-alpha.5",
     "@trainlink-org/typescript-server": "github:trainlink-org/typescript-server",
+    "codemirror": "^6.0.1",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.1",
     "express": "^4.18.2",
     "pinia": "^2.1.4",
-    "socket.io-client": "^4.6.2"
+    "socket.io-client": "^4.6.2",
+    "vue-codemirror": "^6.1.1"
   },
   "overrides": {
     "vue": "latest"
