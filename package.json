@@ -55,7 +55,7 @@
     "@vitest/ui": "^0.33.0",
     "@vue/test-utils": "^2.3.2",
     "concurrently": "^8.2.0",
-    "electron": "^25.2.0",
+    "electron": "^26.2.0",
     "electron-builder": "^24.4.0",
     "jsdom": "^22.1.0",
     "nuxt": "^3.6.5",
