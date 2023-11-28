@@ -55,7 +55,7 @@ function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     }
 }
 
-socket.on('routes/turnoutStateUpdate', (turnoutID, turnoutState) => {
+socket.on('routes/turnoutUpdate', (turnoutID, turnoutState) => {
     console.log('TurnoutUpdate');
     updateTurnout(turnoutID, turnoutState);
 });
@@ -139,6 +139,7 @@ onMounted(() => {
 import { useTurnoutStore } from '@/stores/turnouts';
 
 const turnoutStore = useTurnoutStore();
+console.log(turnoutStore.allTurnoutLinks);
 
 function homePanZoom() {
     console.log(panzoomInstance.value?.getTransform());
