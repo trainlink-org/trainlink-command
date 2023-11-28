@@ -6,6 +6,7 @@
     "email": "matthew.vandevyver@outlook.com"
   },
   "description": "A web and desktop throttle for DCC model railways",
+  "type": "module",
   "scripts": {
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
