@@ -8,7 +8,6 @@ import type {
 } from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
 import { useTurnoutStore } from '@/stores/turnouts';
-import { setLinkStates } from '@/components/mapComponents/shared';
 
 export default function () {
     const context = useNuxtApp();
@@ -71,7 +70,7 @@ export default function () {
         });
         packet.turnouts.forEach((turnout) => {
             turnoutStore.addTurnout(turnout);
-            setLinkStates(turnout.id, turnout.state);
+            turnoutStore.setLinkStates(turnout.id, turnout.state);
         });
         packet.destinations.forEach((destination) => {
             turnoutStore.addDestination(destination);
@@ -156,6 +155,14 @@ export default function () {
     });
 
     socket.on('routes/turnoutLinkUpdate', (turnoutLink) => {});
+
+    socket.on('metadata/initialState/trackPower', (trackPower) => {
+        configStore.trackPower = trackPower;
+    });
+
+    socket.on('throttle/trackPowerUpdate', (trackPower) => {
+        configStore.trackPower = trackPower;
+    });
 
     return { socket };
 }

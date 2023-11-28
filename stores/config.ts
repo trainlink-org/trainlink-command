@@ -11,6 +11,7 @@ export const useConfigStore = defineStore('config', () => {
     const serverVersion = ref('');
     const serverName = ref('');
     const serverProductName = ref('');
+    const trackPower = ref(false);
 
     return {
         driverName,
@@ -22,6 +23,7 @@ export const useConfigStore = defineStore('config', () => {
         serverVersion,
         serverName,
         serverProductName,
+        trackPower,
     };
 });
 

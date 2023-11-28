@@ -4,7 +4,7 @@ import {
     isTouchScreen,
     svgWidth,
     svgHeight,
-    setLinkStates,
+    // setLinkStates,
     DestinationState,
 } from '../components/mapComponents/shared';
 
@@ -39,7 +39,7 @@ function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     const turnout = turnoutStore.getTurnout(turnoutID);
     if (turnout) {
         turnout.state = turnoutState;
-        setLinkStates(turnoutID, turnoutState);
+        turnoutStore.setLinkStates(turnoutID, turnoutState);
     }
 }
 

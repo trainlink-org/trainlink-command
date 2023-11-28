@@ -13,7 +13,7 @@ import type {
     PID,
     RunningAutomationClient,
 } from '@trainlink-org/trainlink-types';
-import { setLinkStates } from '@/components/mapComponents/shared';
+// import { setLinkStates } from '@/components/mapComponents/shared';
 import {
     usedDestinations,
     destinationStates,
@@ -23,6 +23,7 @@ import {
 import { DestinationState } from '@/components/mapComponents/shared';
 
 export const useSocketStore = defineStore('socket', () => {
+    console.log('Socket store');
     // const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
     const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
         // 'http://' +
@@ -48,9 +49,9 @@ export const useSocketStore = defineStore('socket', () => {
     //     });
     // });
 
-    socket.on('metadata/initialState/trackPower', (state) => {
-        trackPower.value = state;
-    });
+    // socket.on('metadata/initialState/trackPower', (state) => {
+    //     trackPower.value = state;
+    // });
 
     // function loadState(locosState: string[]) {
     //     return new Promise<void>((resolve) => {
@@ -128,11 +129,11 @@ export const useSocketStore = defineStore('socket', () => {
     //     console.log(store.toString());
     // });
 
-    socket.on('throttle/trackPowerUpdate', (state, socketId) => {
-        if (socketId !== socket.id) {
-            trackPower.value = state;
-        }
-    });
+    // socket.on('throttle/trackPowerUpdate', (state, socketId) => {
+    //     if (socketId !== socket.id) {
+    //         trackPower.value = state;
+    //     }
+    // });
 
     return {
         socketRef,

@@ -75,49 +75,49 @@ export interface Coordinate {
 //     }
 // }
 
-export function setLinkStates(turnoutID: number, turnoutState: TurnoutState) {
-    const turnoutStore = useTurnoutStore();
-    const turnout = turnoutStore.getTurnout(turnoutID);
-    if (turnout) {
-        const primaryLink = turnoutStore.getTurnoutLink(
-            turnout.primaryDirection,
-        );
-        const secondaryLink = turnoutStore.getTurnoutLink(
-            turnout.secondaryDirection,
-        );
-        if (turnoutState === TurnoutState.closed) {
-            if (primaryLink) {
-                if (primaryLink.start === turnoutID) {
-                    primaryLink.startActive = true;
-                } else {
-                    primaryLink.endActive = true;
-                }
-            }
-            if (secondaryLink) {
-                if (secondaryLink.start === turnoutID) {
-                    secondaryLink.startActive = false;
-                } else {
-                    secondaryLink.endActive = false;
-                }
-            }
-        } else {
-            if (primaryLink) {
-                if (primaryLink.start === turnoutID) {
-                    primaryLink.startActive = false;
-                } else {
-                    primaryLink.endActive = false;
-                }
-            }
-            if (secondaryLink) {
-                if (secondaryLink.start === turnoutID) {
-                    secondaryLink.startActive = true;
-                } else {
-                    secondaryLink.endActive = true;
-                }
-            }
-        }
-    }
-}
+// export function setLinkStates(turnoutID: number, turnoutState: TurnoutState) {
+//     const turnoutStore = useTurnoutStore();
+//     const turnout = turnoutStore.getTurnout(turnoutID);
+//     if (turnout) {
+//         const primaryLink = turnoutStore.getTurnoutLink(
+//             turnout.primaryDirection,
+//         );
+//         const secondaryLink = turnoutStore.getTurnoutLink(
+//             turnout.secondaryDirection,
+//         );
+//         if (turnoutState === TurnoutState.closed) {
+//             if (primaryLink) {
+//                 if (primaryLink.start === turnoutID) {
+//                     primaryLink.startActive = true;
+//                 } else {
+//                     primaryLink.endActive = true;
+//                 }
+//             }
+//             if (secondaryLink) {
+//                 if (secondaryLink.start === turnoutID) {
+//                     secondaryLink.startActive = false;
+//                 } else {
+//                     secondaryLink.endActive = false;
+//                 }
+//             }
+//         } else {
+//             if (primaryLink) {
+//                 if (primaryLink.start === turnoutID) {
+//                     primaryLink.startActive = false;
+//                 } else {
+//                     primaryLink.endActive = false;
+//                 }
+//             }
+//             if (secondaryLink) {
+//                 if (secondaryLink.start === turnoutID) {
+//                     secondaryLink.startActive = true;
+//                 } else {
+//                     secondaryLink.endActive = true;
+//                 }
+//             }
+//         }
+//     }
+// }
 
 export enum DestinationState {
     inactive = 'Inactive', //Normal

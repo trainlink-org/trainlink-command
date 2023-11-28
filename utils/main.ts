@@ -15,7 +15,7 @@ import type {
 } from '@trainlink-org/trainlink-types';
 import type { DestinationState } from '../components/mapComponents/shared';
 
-export const trackPower = ref(false);
+// export const trackPower = ref(false);
 // export const store = reactive(new LocoStoreSocket(socket));
 export const automationList: Map<number, AutomationScriptClient> = reactive(
     new Map(),

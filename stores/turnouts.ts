@@ -2,6 +2,7 @@ import {
     Destination,
     Turnout,
     TurnoutLink,
+    TurnoutState,
 } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
@@ -52,6 +53,47 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         destinations.value.set(destination.id, destination);
     }
 
+    function setLinkStates(turnoutID: number, turnoutState: TurnoutState) {
+        const turnout = turnouts.value.get(turnoutID);
+        if (turnout) {
+            const primaryLink = connections.value.get(turnout.primaryDirection);
+            const secondaryLink = connections.value.get(
+                turnout.secondaryDirection,
+            );
+            if (turnoutState === TurnoutState.closed) {
+                if (primaryLink) {
+                    if (primaryLink.start === turnoutID) {
+                        primaryLink.startActive = true;
+                    } else {
+                        primaryLink.endActive = true;
+                    }
+                }
+                if (secondaryLink) {
+                    if (secondaryLink.start === turnoutID) {
+                        secondaryLink.startActive = false;
+                    } else {
+                        secondaryLink.endActive = false;
+                    }
+                }
+            } else {
+                if (primaryLink) {
+                    if (primaryLink.start === turnoutID) {
+                        primaryLink.startActive = false;
+                    } else {
+                        primaryLink.endActive = false;
+                    }
+                }
+                if (secondaryLink) {
+                    if (secondaryLink.start === turnoutID) {
+                        secondaryLink.startActive = true;
+                    } else {
+                        secondaryLink.endActive = true;
+                    }
+                }
+            }
+        }
+    }
+
     return {
         allTurnouts,
         allDestinations,
@@ -64,6 +106,7 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         addTurnoutLink,
         updateTurnout,
         updateDestination,
+        setLinkStates,
     };
 });
 if (import.meta.hot) {
