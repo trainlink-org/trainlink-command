@@ -72,7 +72,7 @@
     "@pinia/nuxt": "^0.4.11",
     "@trainlink-org/trainlink-types": "^0.0.1-alpha.5",
     "@trainlink-org/typescript-server": "github:trainlink-org/typescript-server",
-    "electron-log": "^4.4.8",
+    "electron-log": "^5.0.1",
     "electron-updater": "^6.1.1",
     "express": "^4.18.2",
     "pinia": "^2.1.4",
