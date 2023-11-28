@@ -1,6 +1,7 @@
 // import { ref } from 'vue';
-import { turnouts, turnoutLinks } from '@/utils/main';
+// import { turnouts, turnoutLinks } from '@/utils/main';
 import { TurnoutState } from '@trainlink-org/trainlink-types';
+import { useTurnoutStore } from '@/stores/turnouts';
 
 export const isTouchScreen = ref(false);
 export const svgWidth = ref(100);
@@ -35,11 +36,55 @@ export interface Coordinate {
     y: number;
 }
 
+// export function setLinkStates(turnoutID: number, turnoutState: TurnoutState) {
+//     const turnout = turnouts.get(turnoutID);
+//     if (turnout) {
+//         const primaryLink = turnoutLinks.get(turnout.primaryDirection);
+//         const secondaryLink = turnoutLinks.get(turnout.secondaryDirection);
+//         if (turnoutState === TurnoutState.closed) {
+//             if (primaryLink) {
+//                 if (primaryLink.start === turnoutID) {
+//                     primaryLink.startActive = true;
+//                 } else {
+//                     primaryLink.endActive = true;
+//                 }
+//             }
+//             if (secondaryLink) {
+//                 if (secondaryLink.start === turnoutID) {
+//                     secondaryLink.startActive = false;
+//                 } else {
+//                     secondaryLink.endActive = false;
+//                 }
+//             }
+//         } else {
+//             if (primaryLink) {
+//                 if (primaryLink.start === turnoutID) {
+//                     primaryLink.startActive = false;
+//                 } else {
+//                     primaryLink.endActive = false;
+//                 }
+//             }
+//             if (secondaryLink) {
+//                 if (secondaryLink.start === turnoutID) {
+//                     secondaryLink.startActive = true;
+//                 } else {
+//                     secondaryLink.endActive = true;
+//                 }
+//             }
+//         }
+//     }
+// }
+
 export function setLinkStates(turnoutID: number, turnoutState: TurnoutState) {
-    const turnout = turnouts.get(turnoutID);
+    const turnoutStore = useTurnoutStore();
+    const turnout = turnoutStore.getTurnout(turnoutID);
     if (turnout) {
-        const primaryLink = turnoutLinks.get(turnout.primaryDirection);
-        const secondaryLink = turnoutLinks.get(turnout.secondaryDirection);
+        const primaryLink = turnoutStore.getTurnoutLink(
+            turnout.primaryDirection,
+        );
+        const secondaryLink = turnoutStore.getTurnoutLink(
+            turnout.secondaryDirection,
+        );
         if (turnoutState === TurnoutState.closed) {
             if (primaryLink) {
                 if (primaryLink.start === turnoutID) {

@@ -1,12 +1,11 @@
 import { io, Socket } from 'socket.io-client';
-import {
-    // connected,
-    destinations,
-    trackPower,
-    turnoutLinks,
-    turnouts,
-    // version,
-} from './main';
+import // connected,
+// destinations,
+// trackPower,
+// turnoutLinks,
+// turnouts,
+// version,
+'./main';
 
 import type {
     ServerToClientEvents,

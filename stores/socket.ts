@@ -35,18 +35,18 @@ export const useSocketStore = defineStore('socket', () => {
     });
     const socketRef = ref(socket);
 
-    socket.on('metadata/initialState/turnouts', (packet) => {
-        packet.links.forEach((value) => {
-            turnoutLinks.set(value.id, value);
-        });
-        packet.turnouts.forEach((value) => {
-            turnouts.set(value.id, value);
-            setLinkStates(value.id, value.state);
-        });
-        packet.destinations.forEach((value) => {
-            destinations.set(value.id, value);
-        });
-    });
+    // socket.on('metadata/initialState/turnouts', (packet) => {
+    //     packet.links.forEach((value) => {
+    //         turnoutLinks.set(value.id, value);
+    //     });
+    //     packet.turnouts.forEach((value) => {
+    //         turnouts.set(value.id, value);
+    //         setLinkStates(value.id, value.state);
+    //     });
+    //     packet.destinations.forEach((value) => {
+    //         destinations.set(value.id, value);
+    //     });
+    // });
 
     socket.on('metadata/initialState/trackPower', (state) => {
         trackPower.value = state;

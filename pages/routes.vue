@@ -4,7 +4,7 @@ import {
     isTouchScreen,
     svgWidth,
     svgHeight,
-    // setLinkStates,
+    setLinkStates,
     DestinationState,
 } from '../components/mapComponents/shared';
 
@@ -16,24 +16,12 @@ import { useSocketStore } from '@/stores/socket';
 const socket = useSocketStore().socketRef;
 const router = useRouter();
 
-// const windowWidth = ref(window.innerWidth);
-
-// const onWidthChange = () => {
-// windowWidth.value = window.innerWidth;
-// svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
-// svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
-// };
 onMounted(() => {
-    // window.addEventListener('resize', onWidthChange);
-    // svgHeight.value = document.getElementById('mapSvg')?.clientHeight || 100;
-    // svgWidth.value = document.getElementById('mapSvg')?.clientWidth || 100;
     if (window.matchMedia('(pointer: coarse)').matches) {
         isTouchScreen.value = true;
         console.log('Touchscreen');
     }
 });
-
-// onUnmounted(() => window.removeEventListener('resize', onWidthChange));
 
 function setTurnout(id: number) {
     const turnout = turnoutStore.getTurnout(id);
@@ -51,7 +39,7 @@ function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
     const turnout = turnoutStore.getTurnout(turnoutID);
     if (turnout) {
         turnout.state = turnoutState;
-        // setLinkStates(turnoutID, turnoutState);
+        setLinkStates(turnoutID, turnoutState);
     }
 }
 
@@ -66,36 +54,8 @@ socket.on('routes/routeUpdate', (route) => {
     });
 });
 
-// const selectedDestinationsNum = ref(0);
-// const firstDestination: Ref<Destination | undefined> = ref(undefined);
-
 const selectedDestinations: Ref<Destination[]> = ref([]);
 
-// function toggleDestination(destination: Destination) {
-//     if (destination !== firstDestination.value) {
-//         selectedDestinationsNum.value++;
-//         if (selectedDestinationsNum.value === 2 && firstDestination.value) {
-//             socket.emit(
-//                 'routes/setRoute',
-//                 firstDestination.value.id,
-//                 destination.id,
-//             );
-//             destinationStates.set(
-//                 firstDestination.value.id,
-//                 DestinationState.inactive,
-//             );
-//             selectedDestinationsNum.value = 0;
-//             firstDestination.value = undefined;
-//         } else {
-//             firstDestination.value = destination;
-//             destinationStates.set(destination.id, DestinationState.selected);
-//         }
-//     } else {
-//         destinationStates.set(destination.id, DestinationState.inactive);
-//         firstDestination.value = undefined;
-//         selectedDestinationsNum.value = 0;
-//     }
-// }
 function toggleDestinationNew(destination: Destination) {
     if (!selectedDestinations.value.includes(destination)) {
         selectedDestinations.value.push(destination);

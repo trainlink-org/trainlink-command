@@ -18,15 +18,15 @@ import type { DestinationState } from '../components/mapComponents/shared';
 export const trackPower = ref(false);
 // export const store = reactive(new LocoStoreSocket(socket));
 export const automationList: Map<number, AutomationScriptClient> = reactive(
-    new Map()
+    new Map(),
 );
 export const runningAutomations: Ref<Map<PID, RunningAutomationClient>> = ref(
-    new Map()
+    new Map(),
 );
 export const allocatedLocos: Ref<Map<number, PID>> = ref(new Map());
-export const turnouts: Map<number, Turnout> = reactive(new Map());
-export const destinations: Map<number, Destination> = reactive(new Map());
-export const turnoutLinks: Map<number, TurnoutLink> = reactive(new Map());
+// export const turnouts: Map<number, Turnout> = reactive(new Map());
+// export const destinations: Map<number, Destination> = reactive(new Map());
+// export const turnoutLinks: Map<number, TurnoutLink> = reactive(new Map());
 // export const targetNameCache: string[] = [];
 // export const cached: boolean[] = [];
 export const usedLinks: Map<number, number> = reactive(new Map());
@@ -34,7 +34,7 @@ export const usedDestinations: Map<number, number> = reactive(new Map());
 export const usedTurnouts: Map<number, number> = reactive(new Map());
 export const activeRoutes: RouteObject[] = [];
 export const destinationStates: Map<number, DestinationState> = reactive(
-    new Map()
+    new Map(),
 );
 
 // export const version = reactive({
