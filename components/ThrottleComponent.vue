@@ -16,20 +16,10 @@ const handler: ProxyHandler<LocoClient> = {
     set(target, prop: keyof typeof target, value): boolean {
         switch (prop) {
             case 'speed':
-                socket.emit(
-                    'throttle/setSpeed',
-                    target.address,
-                    props.id,
-                    value,
-                );
+                socket.emit('throttle/setSpeed', target.address, value);
                 break;
             case 'direction':
-                socket.emit(
-                    'throttle/setDirection',
-                    target.address,
-                    props.id,
-                    value,
-                );
+                socket.emit('throttle/setDirection', target.address, value);
                 break;
         }
         return Reflect.set(target, prop, value);

@@ -99,8 +99,8 @@ export default function () {
         });
     });
 
-    socket.on('throttle/speedUpdate', (identifier, speed, socketId) => {
-        if (typeof identifier === 'number' && socketId !== socket.id) {
+    socket.on('throttle/speedUpdate', (identifier, speed, socketID) => {
+        if (typeof identifier === 'number' && socketID !== socket.id) {
             const loco = locoStore.getLoco(identifier);
             if (loco) loco.speed = speed;
         }
