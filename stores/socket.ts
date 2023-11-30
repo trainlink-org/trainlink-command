@@ -87,6 +87,7 @@ export const useSocketStore = defineStore('socket', () => {
     });
 
     socket.on('routes/setRouteComponents', (destinations, turnouts, links) => {
+        console.log('setRouteComponents');
         destinations.forEach((destination) => {
             usedDestinations.set(destination, 0);
             destinationStates.set(destination, DestinationState.active);

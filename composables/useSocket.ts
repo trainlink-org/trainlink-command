@@ -156,6 +156,37 @@ export default function () {
 
     socket.on('routes/turnoutLinkUpdate', (turnoutLink) => {});
 
+    socket.on('routes/setRouteComponents', (destinations, turnouts, links) => {
+        console.log(links);
+        // console.log('setRouteComponents');
+        destinations.forEach((destination) => {
+            // usedDestinations.set(destination, 0);
+            // turnoutStore.getDestination(destination)?.usedInRoute = true
+            // destinationStates.set(destination, DestinationState.active);
+        });
+        destinations
+            .map((destinationID) => turnoutStore.getDestination(destinationID))
+            .forEach((destination) => {
+                if (destination) destination.usedInRoute = true;
+            });
+        // turnouts.forEach((turnout) => {
+        //     usedTurnouts.set(turnout, 0);
+        // });
+        turnouts
+            .map((turnoutID) => turnoutStore.getTurnout(turnoutID))
+            .forEach((turnout) => {
+                if (turnout) turnout.usedInRoute = true;
+            });
+        // links.forEach((link) => {
+        //     usedLinks.set(link, 0);
+        // });
+        links
+            .map((linkID) => turnoutStore.getTurnoutLink(linkID))
+            .forEach((link) => {
+                if (link) link.usedInRoute = true;
+            });
+    });
+
     socket.on('metadata/initialState/trackPower', (trackPower) => {
         configStore.trackPower = trackPower;
     });

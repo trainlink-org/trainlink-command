@@ -142,8 +142,9 @@ function homePanZoom() {
                             y: -5,
                         }
                     "
-                    :active-route="usedLinks.get(link.id) !== undefined"
+                    :active-route="link.usedInRoute"
                 />
+                <!-- :active-route="usedLinks.get(link.id) !== undefined" -->
                 <TurnoutComponent
                     v-for="turnout in turnoutStore.allTurnouts"
                     :key="turnout.id"

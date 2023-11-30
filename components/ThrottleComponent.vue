@@ -19,12 +19,17 @@ const handler: ProxyHandler<LocoClient> = {
                 socket.emit(
                     'throttle/setSpeed',
                     target.address,
-                    value,
                     props.id,
+                    value,
                 );
                 break;
             case 'direction':
-                socket.emit('throttle/setDirection', target.address, value);
+                socket.emit(
+                    'throttle/setDirection',
+                    target.address,
+                    props.id,
+                    value,
+                );
                 break;
         }
         return Reflect.set(target, prop, value);
