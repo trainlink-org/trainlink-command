@@ -12,7 +12,7 @@ import {
 // import ConnectorComponentSettings from '@/components/mapComponents/ConnectorComponentSettings.vue';
 // import DestinationComponent from '@/components/mapComponents/DestinationComponent.vue';
 
-import { turnoutLinks, turnouts, destinations } from '@/utils/main';
+// import { turnoutLinks, turnouts, destinations } from '@/utils/main';
 
 import {
     TurnoutState,
@@ -59,7 +59,7 @@ const viewBox = computed(() => {
 const points = computed(() => {
     const points: { coord: Coordinate; id: number }[] = [];
     let nextId = 1;
-    Array.from(turnoutLinks.values()).forEach((turnoutLink) => {
+    Array.from(turnoutStore.allTurnoutLinks).forEach((turnoutLink) => {
         for (let i = 0; i < turnoutLink.points.length; i++) {
             const point = { coord: turnoutLink.points[i], id: nextId };
             points.push(point);
@@ -76,91 +76,117 @@ const points = computed(() => {
 
 const beingMoved: Ref<number | null> = ref(null);
 
+function cursorToSvgX(cursor: number): number {
+    // const coord = (cursor / (svgRef.value?.clientWidth || 0)) * 100;
+    const coord = (cursor / (svgRef.value?.clientWidth || 0)) * 100;
+    // console.log(coord);
+    return coord;
+}
+function cursorToSvgY(cursor: number): number {
+    const coord = (cursor / (svgRef.value?.clientHeight || 0)) * 100;
+    // console.log(coord);
+    return coord;
+}
+
 function drag(
     id: number,
-    { offsetX, offsetY }: { offsetX: number; offsetY: number },
+    {
+        offsetX: cursorX,
+        offsetY: cursorY,
+    }: { offsetX: number; offsetY: number },
 ) {
     console.log('Drag');
-    const offset = offsets.get(id) || { x: 3, y: 3 };
-    dragOffset.x = offsetX - offset.x;
-    dragOffset.y = offsetY - offset.y;
+    const offset = offsets.get(id) || { x: 0, y: 0 };
+    // dragOffset.x = cursorX - (svgRef.value?.clientWidth || 0) - offset.x;
+    // dragOffset.x = cursorX - (svgRef.value?.clientWidth || 0) - offset.x;
+    dragOffset.x = cursorToSvgX(cursorX) - offset.x;
+    dragOffset.y = cursorToSvgY(cursorY) - offset.y;
     beingMoved.value = id;
-    box.value?.addEventListener('mousemove', move);
-    box.value?.addEventListener('mouseleave', pause);
-    box.value?.addEventListener('mouseenter', resume);
+    svgRef.value?.addEventListener('mousemove', move);
+    svgRef.value?.addEventListener('mouseleave', pause);
+    svgRef.value?.addEventListener('mouseenter', resume);
 }
 
 function drop() {
     dragOffset.x = dragOffset.y = 0;
     console.log('Drop');
-    box.value?.removeEventListener('mousemove', move);
-    box.value?.removeEventListener('mouseleave', pause);
-    box.value?.removeEventListener('mouseenter', resume);
+    svgRef.value?.removeEventListener('mousemove', move);
+    svgRef.value?.removeEventListener('mouseleave', pause);
+    svgRef.value?.removeEventListener('mouseenter', resume);
     beingMoved.value = null;
 }
 
 function pause() {
-    box.value?.removeEventListener('mousemove', move);
+    svgRef.value?.removeEventListener('mousemove', move);
 }
 
 function resume() {
-    box.value?.addEventListener('mousemove', move);
+    svgRef.value?.addEventListener('mousemove', move);
 }
 
 function move({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
     changesMade.value = true;
+    // console.log(offsetX);
     console.log('move');
     if (beingMoved.value !== null) {
-        const offset = offsets.get(beingMoved.value) || { x: 3, y: 3 };
-        offset.x = offsetX - dragOffset.x;
-        offset.y = offsetY - dragOffset.y;
+        const mapPoint = turnoutStore.getMapPoint(beingMoved.value);
+        if (mapPoint) {
+            console.log(cursorToSvgX(offsetX));
+            mapPoint.coordinate.x = cursorToSvgX(offsetX);
+            mapPoint.coordinate.y = cursorToSvgY(offsetY);
+        }
+        // const offset = offsets.get(beingMoved.value) || { x: 0, y: 0 };
+
+        // offset.x = cursorToSvgX(offsetX) - dragOffset.x;
+        // offset.y = cursorToSvgY(offsetY) - dragOffset.y;
+        // console.log(offset.x);
         if (beingMoved.value > 0) {
             const turnout = turnoutStore.getTurnout(beingMoved.value);
             if (turnout) {
-                turnout.connections.forEach((linkId) => {
-                    const link = turnoutLinks.get(linkId);
-                    if (link) {
-                        if (link.end === beingMoved.value) {
-                            const offset = linkEndOffsets.get(link.id) || {
-                                x: 3,
-                                y: 3,
-                            };
-                            offset.x = offsetX - dragOffset.x;
-                            offset.y = offsetY - dragOffset.y;
-                        } else {
-                            const offset = linkStartOffsets.get(link.id) || {
-                                x: 3,
-                                y: 3,
-                            };
-                            offset.x = offsetX - dragOffset.x;
-                            offset.y = offsetY - dragOffset.y;
-                        }
-                    }
-                });
+                // turnout.connections.forEach((linkId) => {
+                //     const link = turnoutLinks.get(linkId);
+                //     if (link) {
+                //         if (link.end === beingMoved.value) {
+                //             const offset = linkEndOffsets.get(link.id) || {
+                //                 x: 3,
+                //                 y: 3,
+                //             };
+                //             offset.x = offsetX - dragOffset.x;
+                //             offset.y = offsetY - dragOffset.y;
+                //         } else {
+                //             const offset = linkStartOffsets.get(link.id) || {
+                //                 x: 3,
+                //                 y: 3,
+                //             };
+                //             offset.x = offsetX - dragOffset.x;
+                //             offset.y = offsetY - dragOffset.y;
+                //         }
+                //     }
+                // });
             }
         } else {
-            const destination = destinations.get(beingMoved.value);
+            const destination = turnoutStore.getDestination(beingMoved.value);
             if (destination) {
-                destination.connections.forEach((linkId) => {
-                    const link = turnoutLinks.get(linkId);
-                    if (link) {
-                        if (link.end === beingMoved.value) {
-                            const offset = linkEndOffsets.get(link.id) || {
-                                x: 3,
-                                y: 3,
-                            };
-                            offset.x = offsetX - dragOffset.x;
-                            offset.y = offsetY - dragOffset.y;
-                        } else {
-                            const offset = linkStartOffsets.get(link.id) || {
-                                x: 3,
-                                y: 3,
-                            };
-                            offset.x = offsetX - dragOffset.x;
-                            offset.y = offsetY - dragOffset.y;
-                        }
-                    }
-                });
+                // destination.connections.forEach((linkId) => {
+                //     const link = turnoutLinks.get(linkId);
+                //     if (link) {
+                //         if (link.end === beingMoved.value) {
+                //             const offset = linkEndOffsets.get(link.id) || {
+                //                 x: 3,
+                //                 y: 3,
+                //             };
+                //             offset.x = offsetX - dragOffset.x;
+                //             offset.y = offsetY - dragOffset.y;
+                //         } else {
+                //             const offset = linkStartOffsets.get(link.id) || {
+                //                 x: 3,
+                //                 y: 3,
+                //             };
+                //             offset.x = offsetX - dragOffset.x;
+                //             offset.y = offsetY - dragOffset.y;
+                //         }
+                //     }
+                // });
             }
         }
     }
@@ -175,26 +201,26 @@ function dragPoint(
     dragOffset.x = offsetX - offset.x;
     dragOffset.y = offsetY - offset.y;
     beingMoved.value = id;
-    box.value?.addEventListener('mousemove', movePoint);
-    box.value?.addEventListener('mouseleave', pausePoint);
-    box.value?.addEventListener('mouseenter', resumePoint);
+    svgRef.value?.addEventListener('mousemove', movePoint);
+    svgRef.value?.addEventListener('mouseleave', pausePoint);
+    svgRef.value?.addEventListener('mouseenter', resumePoint);
 }
 
 function dropPoint() {
     dragOffset.x = dragOffset.y = 0;
     console.log('Drop');
-    box.value?.removeEventListener('mousemove', movePoint);
-    box.value?.removeEventListener('mouseleave', pausePoint);
-    box.value?.removeEventListener('mouseenter', resumePoint);
+    svgRef.value?.removeEventListener('mousemove', movePoint);
+    svgRef.value?.removeEventListener('mouseleave', pausePoint);
+    svgRef.value?.removeEventListener('mouseenter', resumePoint);
     beingMoved.value = null;
 }
 
 function pausePoint() {
-    box.value?.removeEventListener('mousemove', movePoint);
+    svgRef.value?.removeEventListener('mousemove', movePoint);
 }
 
 function resumePoint() {
-    box.value?.addEventListener('mousemove', movePoint);
+    svgRef.value?.addEventListener('mousemove', movePoint);
 }
 
 function movePoint({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
@@ -213,7 +239,7 @@ const linkStartOffsets = reactive(new Map<number, Coordinate>());
 const linkEndOffsets = reactive(new Map<number, Coordinate>());
 
 turnoutStore.allTurnouts.forEach((element) => {
-    offsets.set(element.id, { x: 3, y: 3 });
+    offsets.set(element.id, { x: 0, y: 0 });
 });
 turnoutStore.allDestinations.forEach((element) => {
     offsets.set(element.id, { x: 3, y: 3 });
@@ -232,10 +258,10 @@ points.value.forEach((element) => {
     pointIdLookup.set(element.coord, element.id);
 });
 
-const box = ref<HTMLInputElement | null>(null);
+const svgRef = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
-    box.value?.focus();
+    svgRef.value?.focus();
 });
 
 const dragOffset = reactive({
@@ -317,9 +343,9 @@ function addToMap() {
             name: addModalValues.name,
             description: '',
             coordinate: { x: 0, y: 0 },
-            connections: [],
+            usedInRoute: false,
         };
-        destinations.set(newDestination.id, newDestination);
+        // destinations.set(newDestination.id, newDestination);
         offsets.set(newDestination.id, { x: 0, y: 0 });
         drag(newDestination.id, { offsetX: 0, offsetY: 0 });
     } else {
@@ -328,12 +354,12 @@ function addToMap() {
             id: addModalValues.id,
             name: addModalValues.name,
             coordinate: { x: 0, y: 0 },
-            connections: [],
             state: TurnoutState.closed,
             primaryDirection: 0,
             secondaryDirection: 0,
+            usedInRoute: false,
         };
-        turnouts.set(newTurnout.id, newTurnout);
+        // turnouts.set(newTurnout.id, newTurnout);
         offsets.set(newTurnout.id, { x: 0, y: 0 });
         drag(newTurnout.id, { offsetX: 0, offsetY: 0 });
     }
@@ -345,27 +371,27 @@ const newLineStart: Ref<number | undefined> = ref();
 
 function createLine(ID: number) {
     if (newLineStart.value !== undefined && newLineStart.value !== ID) {
-        const keys = Array.from(turnoutLinks.keys()).sort(
-            (a: number, b: number) => {
-                return a > b ? a : b;
-            },
-        );
+        const keys = Array.from(
+            turnoutStore.allTurnoutLinks.map((link) => link.id),
+        ).sort((a: number, b: number) => {
+            return a > b ? a : b;
+        });
         const nextID = keys[0] + 1;
         console.log(keys);
         console.log(nextID);
-        turnoutLinks.set(nextID, {
-            id: nextID,
-            length: 0,
-            points: [],
-            startActive: false,
-            endActive: false,
-            start: newLineStart.value,
-            end: ID,
-        });
+        // turnoutLinks.set(nextID, {
+        //     id: nextID,
+        //     length: 0,
+        //     points: [],
+        //     startActive: false,
+        //     endActive: false,
+        //     start: newLineStart.value,
+        //     end: ID,
+        // });
         linkStartOffsets.set(nextID, { x: 3, y: 3 });
         linkEndOffsets.set(nextID, { x: 3, y: 3 });
-        turnoutStore.getTurnout(ID)?.connections.push(nextID);
-        turnoutStore.getTurnout(newLineStart.value)?.connections.push(nextID);
+        // turnoutStore.getTurnout(ID)?.connections.push(nextID);
+        // turnoutStore.getTurnout(newLineStart.value)?.connections.push(nextID);
         newLineStart.value = undefined;
     } else if (newLineStart.value === ID) {
         newLineStart.value = undefined;
@@ -420,54 +446,54 @@ function discardChanges() {
     });
     changesMade.value = false;
 }
+// import panzoom, { type PanZoom } from 'panzoom';
+
+// const svgRef: Ref<SVGElement | null> = ref(null);
+// const panzoomInstance: Ref<PanZoom | null> = ref(null);
+// onMounted(() => {
+//     if (svgRef.value !== null) {
+//         panzoomInstance.value = panzoom(svgRef.value, {
+//             beforeWheel: function (e) {
+//                 return !e.ctrlKey;
+//             },
+//             zoomDoubleClickSpeed: 1,
+//             onDoubleClick: function (e) {
+//                 return false;
+//             },
+//         });
+//     }
+// });
+
+// function homePanZoom() {
+//     console.log(panzoomInstance.value?.getTransform());
+//     if (panzoomInstance.value) {
+//         panzoomInstance.value.moveTo(0, 0);
+//         panzoomInstance.value.zoomAbs(0, 0, 1);
+//     }
+// }
 </script>
 
 <template>
-    <div class="flex h-full w-full flex-col">
-        <svg id="mapSvg" ref="box" class="h-full w-full" :viewBox="viewBox">
+    <div class="flex h-full w-full flex-col items-center">
+        <!-- <div class="h-full w-full p-20"> -->
+        <span class="grow" />
+        <svg
+            id="mapSvg"
+            class="h-max w-max max-h-full border-black border m-5 rounded"
+            viewBox="0 0 100 100"
+            ref="svgRef"
+        >
             <!-- From saved map -->
-            <ConnectorComponentSettings
-                v-for="link in turnoutLinks.values()"
+            <ConnectorComponent
+                v-for="link in turnoutStore.allTurnoutLinks"
                 :key="link.id"
-                :start="
-                    addCoords(
-                        turnoutStore.getTurnout(link.start)?.coordinate ||
-                            turnoutStore.getDestination(link.start)
-                                ?.coordinate || {
-                                x: -5,
-                                y: -5,
-                            },
-                        calculateCoordInverse(
-                            linkStartOffsets.get(link.id) || { x: 0, y: 0 },
-                        ),
-                    )
-                "
-                :points="applyPointOffsets(link.points)"
-                :end="
-                    addCoords(
-                        turnoutStore.getTurnout(link.end)?.coordinate || {
-                            x: -5,
-                            y: -5,
-                        },
-                        calculateCoordInverse(
-                            linkEndOffsets.get(link.id) || { x: 0, y: 0 },
-                        ),
-                    )
-                "
-                :active-route="false"
+                :link="link"
+                :settings="true"
             />
             <TurnoutComponent
                 v-for="turnout in turnoutStore.allTurnouts"
                 :key="turnout.id"
-                :coordinate="{
-                    x:
-                        turnout.coordinate.x +
-                        calculateXCoordInverse(offsets.get(turnout.id)?.x || 0),
-                    y:
-                        turnout.coordinate.y +
-                        calculateYCoordInverse(offsets.get(turnout.id)?.y || 0),
-                }"
-                :active-route="false"
+                :turnout="turnout"
                 :title="turnout.name"
                 :class="
                     !lineEditMode
@@ -490,19 +516,13 @@ function discardChanges() {
                     }
                 "
             />
+            <!-- :offset="offsets.get(turnout.id)" -->
             <DestinationComponent
-                v-for="destination in destinations.values()"
+                v-for="destination in turnoutStore.allDestinations"
+                :destination="destination"
                 :key="destination.id"
-                :state="DestinationState.inactive"
                 :title="destination.name"
-                :coordinate="
-                    addCoords(
-                        destination.coordinate,
-                        calculateCoordInverse(
-                            offsets.get(destination.id) || { x: 0, y: 0 },
-                        ),
-                    )
-                "
+                :selected="false"
                 :class="
                     beingMoved === destination.id
                         ? 'cursor-grabbing'
@@ -514,18 +534,13 @@ function discardChanges() {
             <ConnectorHandleComponent
                 v-for="point in points"
                 :key="point.id"
-                :point="
-                    addCoords(
-                        point.coord,
-                        calculateCoordInverse(
-                            pointOffsets.get(point.id) || { x: 0, y: 0 },
-                        ),
-                    )
-                "
+                :point="point.coord"
                 @mousedown="(event: MouseEvent) => dragPoint(point.id, event)"
                 @mouseup="dropPoint"
             />
         </svg>
+        <!-- </div> -->
+        <span class="grow" />
         <div
             class="relative flex w-full items-center justify-around border-t-2 border-primary-300 py-1"
         >

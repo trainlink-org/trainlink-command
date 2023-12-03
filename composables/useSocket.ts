@@ -1,5 +1,10 @@
 import { useLocoStore } from '~/stores/locos';
-import { isDestination, isTurnout, Loco } from '@trainlink-org/trainlink-types';
+import {
+    isDestination,
+    isTurnout,
+    Loco,
+    TurnoutState,
+} from '@trainlink-org/trainlink-types';
 import { useConfigStore } from '~/stores/config';
 import { useSocketStore } from '@/stores/socket';
 import { useTurnoutStore } from '@/stores/turnouts';
@@ -170,6 +175,26 @@ export default function () {
 
     socket.on('throttle/trackPowerUpdate', (trackPower) => {
         configStore.trackPower = trackPower;
+    });
+
+    function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
+        console.log(`${turnoutID}: ${turnoutState}`);
+        const turnout = turnoutStore.getTurnout(turnoutID);
+        if (turnout) {
+            turnout.state = turnoutState;
+            turnoutStore.setLinkStates(turnoutID, turnoutState);
+        }
+    }
+
+    socket.on('routes/turnoutUpdate', (turnoutID, turnoutState) => {
+        console.log('TurnoutUpdate');
+        updateTurnout(turnoutID, turnoutState);
+    });
+
+    socket.on('routes/routeUpdate', (route) => {
+        route.turnouts.forEach((turnout) => {
+            updateTurnout(turnout.id, turnout.state);
+        });
     });
 
     return { socket };

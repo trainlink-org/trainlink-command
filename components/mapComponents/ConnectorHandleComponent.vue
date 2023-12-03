@@ -16,9 +16,9 @@ const props = defineProps({
 <template>
     <circle
         :key="point.x * point.y"
-        :r="calculateSize(1.2)"
-        :cx="calculateXCoord(point.x)"
-        :cy="calculateYCoord(point.y)"
+        :r="1.2"
+        :cx="point.x"
+        :cy="point.y"
         class="fill-blue-400"
     />
 </template>

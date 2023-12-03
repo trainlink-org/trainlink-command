@@ -1,20 +1,14 @@
 <script setup lang="ts">
-// import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue';
-import {
-    isTouchScreen,
-    svgWidth,
-    svgHeight,
-    // setLinkStates,
-    DestinationState,
-} from '../components/mapComponents/shared';
-
 import { TurnoutState, type Destination } from '@trainlink-org/trainlink-types';
 
-import { usedLinks, usedTurnouts, destinationStates } from '@/utils/main';
 import { useSocketStore } from '@/stores/socket';
+import { useTurnoutStore } from '@/stores/turnouts';
 
-const socket = useSocketStore().socketRef;
+import { isTouchScreen } from '../components/mapComponents/shared';
+
 const router = useRouter();
+const socket = useSocketStore().socketRef;
+const turnoutStore = useTurnoutStore();
 
 onMounted(() => {
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -29,34 +23,13 @@ function setTurnout(id: number) {
         if (turnout.state === TurnoutState.thrown)
             turnout.state = TurnoutState.closed;
         else turnout.state = TurnoutState.thrown;
-        // setLinkStates(turnout.id, turnout.state);
         socket.emit('routes/setTurnout', turnout.id, turnout.state);
     }
 }
 
-function updateTurnout(turnoutID: number, turnoutState: TurnoutState) {
-    console.log(`${turnoutID}: ${turnoutState}`);
-    const turnout = turnoutStore.getTurnout(turnoutID);
-    if (turnout) {
-        turnout.state = turnoutState;
-        turnoutStore.setLinkStates(turnoutID, turnoutState);
-    }
-}
-
-socket.on('routes/turnoutUpdate', (turnoutID, turnoutState) => {
-    console.log('TurnoutUpdate');
-    updateTurnout(turnoutID, turnoutState);
-});
-
-socket.on('routes/routeUpdate', (route) => {
-    route.turnouts.forEach((turnout) => {
-        updateTurnout(turnout.id, turnout.state);
-    });
-});
-
 const selectedDestinations: Ref<Destination[]> = ref([]);
 
-function toggleDestinationNew(destination: Destination) {
+function toggleDestination(destination: Destination) {
     if (!selectedDestinations.value.includes(destination)) {
         selectedDestinations.value.push(destination);
         if (selectedDestinations.value.length === 2) {
@@ -65,16 +38,10 @@ function toggleDestinationNew(destination: Destination) {
                 selectedDestinations.value[0].id,
                 selectedDestinations.value[1].id,
             );
-            destinationStates.set(
-                selectedDestinations.value[0].id,
-                DestinationState.inactive,
-            );
             selectedDestinations.value = [];
         } else {
-            destinationStates.set(destination.id, DestinationState.selected);
         }
     } else {
-        destinationStates.set(destination.id, DestinationState.inactive);
         selectedDestinations.value = [];
     }
 }
@@ -96,15 +63,9 @@ onMounted(() => {
     }
 });
 
-import { useTurnoutStore } from '@/stores/turnouts';
-
-const turnoutStore = useTurnoutStore();
-console.log(turnoutStore.allTurnoutLinks);
-
 function homePanZoom() {
     console.log(panzoomInstance.value?.getTransform());
     if (panzoomInstance.value) {
-        // panzoomInstance.value.smoothZoom(0, 0, panzoomInstance.value.te)
         panzoomInstance.value.moveTo(0, 0);
         panzoomInstance.value.zoomAbs(0, 0, 1);
     }
@@ -122,51 +83,24 @@ function homePanZoom() {
                 viewBox="0 0 100 100"
                 ref="svgRef"
             >
-                <!-- <g id="panzoom" ref="svgRef"> -->
                 <ConnectorComponent
                     v-for="link in turnoutStore.allTurnoutLinks"
                     :key="link.id"
-                    :start-seg-active="link.startActive"
-                    :end-seg-active="link.endActive"
-                    :start="
-                        turnoutStore.getTurnout(link.start)?.coordinate ||
-                        turnoutStore.getDestination(link.start)?.coordinate || {
-                            x: -5,
-                            y: -5,
-                        }
-                    "
-                    :points="link.points"
-                    :end="
-                        turnoutStore.getTurnout(link.end)?.coordinate || {
-                            x: -5,
-                            y: -5,
-                        }
-                    "
-                    :active-route="link.usedInRoute"
+                    :link="link"
                 />
-                <!-- :active-route="usedLinks.get(link.id) !== undefined" -->
                 <TurnoutComponent
                     v-for="turnout in turnoutStore.allTurnouts"
                     :key="turnout.id"
-                    :coordinate="turnout.coordinate"
-                    :active-route="usedTurnouts.get(turnout.id) !== undefined"
+                    :turnout="turnout"
                     @click="setTurnout(turnout.id)"
                 />
                 <DestinationComponent
                     v-for="destination in turnoutStore.allDestinations"
                     :key="destination.id"
-                    :selected="
-                        destinationStates.get(destination.id) ===
-                        DestinationState.selected
-                    "
-                    :active="
-                        destinationStates.get(destination.id) ===
-                        DestinationState.active
-                    "
-                    :coordinate="destination.coordinate"
-                    @click="toggleDestinationNew(destination)"
+                    :destination="destination"
+                    :selected="selectedDestinations.includes(destination)"
+                    @click="toggleDestination(destination)"
                 />
-                <!-- </g> -->
             </svg>
         </div>
         <div

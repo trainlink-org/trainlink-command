@@ -3,6 +3,7 @@ import {
     type Turnout,
     type TurnoutLink,
     TurnoutState,
+    type MapPoint,
 } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
@@ -27,6 +28,10 @@ export const useTurnoutStore = defineStore('turnouts', () => {
 
     function getDestination(id: number) {
         return destinations.value.get(id);
+    }
+
+    function getMapPoint(id: number): MapPoint | undefined {
+        return turnouts.value.get(id) || destinations.value.get(id);
     }
 
     function getTurnoutLink(id: number) {
@@ -101,6 +106,7 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         getTurnout,
         getDestination,
         getTurnoutLink,
+        getMapPoint,
         addTurnout,
         addDestination,
         addTurnoutLink,

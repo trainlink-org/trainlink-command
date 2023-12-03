@@ -1,25 +1,19 @@
 <!-- Used to display a turnout on the Routes map -->
 <script setup lang="ts">
-import { type Coordinate } from './shared';
+import type { Coordinate, Turnout } from '@trainlink-org/trainlink-types';
 
 const props = defineProps({
-    coordinate: { type: Object as () => Coordinate, required: true },
-    activeRoute: { type: Boolean, required: true },
-});
-const xCoord = computed(() => {
-    return props.coordinate.x;
-});
-const yCoord = computed(() => {
-    return props.coordinate.y;
+    turnout: { type: Object as () => Turnout, required: true },
+    offset: { type: Object as () => Coordinate, default: { x: 0, y: 0 } },
 });
 </script>
 
 <template>
     <circle
         class="hover:fill-primary-400 active:fill-red-600"
-        :class="props.activeRoute ? 'fill-blue-700' : ''"
-        :cx="xCoord"
-        :cy="yCoord"
+        :class="props.turnout.usedInRoute ? 'fill-blue-700' : ''"
+        :cx="props.turnout.coordinate.x + props.offset.x"
+        :cy="props.turnout.coordinate.y + props.offset.y"
         :r="1.25"
     />
 </template>
