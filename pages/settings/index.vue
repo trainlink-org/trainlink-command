@@ -187,7 +187,7 @@ async function editLoco() {
                     'config/editLoco',
                     currentlyEditing.address,
                     modalValues.name,
-                    locoAddress
+                    locoAddress,
                 );
                 editOpen.value = false;
             }

@@ -15,17 +15,20 @@ const props = defineProps({
 
 const midPoints = calculateMidPoints(props.start, props.points, props.end);
 const path = computed(() => {
+
     let path = `M ${midPoints.startMid.x} ${midPoints.startMid.y}`;
 
     Array.from(props.points).forEach((point) => {
         const virtualPoint = point;
         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
+
     path = `${path} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
     return path;
 });
 const startPath = `M ${props.start.x} ${props.start.y} L ${midPoints.startMid.x} ${midPoints.startMid.y}`;
 const endPath = `M ${props.end.x} ${props.end.y} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
+
 function calculateMidPoints(
     startPoint: Coordinate,
     points: Coordinate[],
@@ -33,8 +36,10 @@ function calculateMidPoints(
 ) {
     const distanceFactor = 5;
     if (
+
         Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) <
         distanceFactor
+
     ) {
         const midPoint = {
             x:
