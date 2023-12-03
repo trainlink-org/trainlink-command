@@ -1,11 +1,8 @@
 <!-- Displays a running script on the Automations page -->
 <script setup lang="ts">
-// import { useRoute, useRouter } from 'vue-router';
-// import { ref } from 'vue';
 import { runningAutomations } from '@/utils/main';
 import { AutomationStatus } from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
-// import { socket } from '@/utils/socketHelper';
 const route = useRoute();
 const router = useRouter();
 

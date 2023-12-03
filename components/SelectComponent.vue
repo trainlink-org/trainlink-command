@@ -1,12 +1,4 @@
 <script setup lang="ts">
-// import { ref, computed } from 'vue';
-
-// const props = defineProps({
-//     options: { type: Array<string>, required: true },
-//     selected: { type: String, required: true },
-//     tabindex: { type: Number, required: false, default: 0 },
-// });
-
 const props = defineProps<{
     options: Array<string>;
     selected: string;
@@ -18,12 +10,10 @@ const emit = defineEmits<{
     (e: 'opened'): void;
 }>();
 
-// const emit = defineEmits(['update:selected'])
-
 /** Stores whether the dropdown is open or not */
 const open = ref(false);
 
-// /** Allows the template to access the selected prop */
+/** Allows the template to access the selected prop */
 const selectedComputed = computed({
     get() {
         return props.selected;

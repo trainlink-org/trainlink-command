@@ -1,13 +1,9 @@
 <script setup lang="ts">
-// import { onMounted, ref, computed } from 'vue';
-// import { useRoute } from 'vue-router';
-
 const props = defineProps({
     options: { type: Array<string>, required: true },
     tabindex: { type: Number, required: false, default: 0 },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emit = defineEmits<{
     (e: 'input', value: string): void;
 }>();

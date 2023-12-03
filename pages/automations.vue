@@ -1,9 +1,4 @@
 <script setup lang="ts">
-// import { computed, ref, reactive, getCurrentInstance, onMounted, onUnmounted, watch } from 'vue';
-// import { useRoute, useRouter } from 'vue-router';
-
-// import { socket } from '@/utils/socketHelper';
-
 import {
     AutomationType,
     type RunningAutomationClient,
@@ -18,11 +13,6 @@ import {
 import { useLocoStore } from '~/stores/locos';
 import { useSocketStore } from '@/stores/socket';
 const locoStore = useLocoStore();
-// import ModalComponent from '../components/ModalComponent.vue';
-// import SelectComponent from '../components/SelectComponent.vue';
-
-// const file: Ref<FileList> = ref<FileList>(new FileList());
-// let files: FileList;
 
 const socket = useSocketStore().socketRef;
 

@@ -1,22 +1,6 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
-import { useSocketStore } from '@/stores/socket';
-
-// import { connected } from './utils/main';
 const configStore = useConfigStore();
 useSocket();
-// const socket = useSocket().socket;
-// const socket2 = useSocket().socket;
-// socket.on('connect', () => {
-//     console.log('Connect in app');
-// });
-// socket2.on('connect', () => {
-//     console.log('Connect in app (2)');
-// });
-// const socketStore = useSocketStore();
-// socketStore.socketRef.on('hardware/availableDevices', () => {
-//     console.log('Connect in app (3)');
-// });
 </script>
 
 <template>

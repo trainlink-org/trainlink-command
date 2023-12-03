@@ -1,6 +1,5 @@
 <!-- The about page in settings -->
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
 const configStore = useConfigStore();
 const runtimeConfig = useRuntimeConfig();
 </script>

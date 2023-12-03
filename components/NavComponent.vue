@@ -1,10 +1,4 @@
 <script setup lang="ts">
-// import { RouterLink, useRouter } from 'vue-router';
-
-// import { trackPower } from '@/utils/main';
-
-// import SelectNavComponent from './SelectNavComponent.vue';
-// import { socket } from '@/utils/socketHelper';
 import { useConfigStore } from '@/stores/config';
 import { useSocketStore } from '@/stores/socket';
 

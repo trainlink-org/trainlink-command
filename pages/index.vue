@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { useLocoStore } from '~/stores/locos';
 
-// import { reactive } from 'vue';
-// import ThrottleComponent from '../components/ThrottleComponent.vue';
-
-// import { ref, onMounted, onUnmounted} from 'vue';
-
-// import {useRoute, useRouter} from 'vue-router';
-
-const route = useRoute();
 const router = useRouter();
-
-// console.log(`Params: ${route.params}`);
 
 if (process.client) {
     const windowWidth = ref(window.innerWidth);
@@ -65,7 +55,6 @@ function throttleSelector(targetThrottle: number) {
 const locoStore = useLocoStore();
 
 console.log(router.options.history.state.back);
-// const returnPath = route.params.prev ? `/${route.params.prev}` : '';
 </script>
 
 <template>

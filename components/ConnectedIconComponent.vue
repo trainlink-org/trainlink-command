@@ -1,7 +1,6 @@
 <script setup lang="ts">
+import type { HardwareDevice } from '@trainlink-org/trainlink-types';
 import { useConfigStore } from '@/stores/config';
-// import { socket } from '@/utils/socketHelper';
-import { HardwareDevice } from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
 
 const configStore = useConfigStore();

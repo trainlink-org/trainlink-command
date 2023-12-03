@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import ButtonComponent from './ButtonComponent.vue';
-
 const props = defineProps({
     title: { type: String, required: true },
     submitText: { type: String, required: false, default: 'Submit' },

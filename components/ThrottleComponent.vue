@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Direction } from '@trainlink-org/trainlink-types';
 import { useLocoStore } from '@/stores/locos';
-import { LocoClient } from '@/stores/locos';
+import type { LocoClient } from '@/stores/locos';
 import { useSocketStore } from '@/stores/socket';
 
 const props = defineProps({

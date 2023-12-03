@@ -1,11 +1,6 @@
-import { io, Socket } from 'socket.io-client';
 import { useLocoStore } from '~/stores/locos';
 import { isDestination, isTurnout, Loco } from '@trainlink-org/trainlink-types';
 import { useConfigStore } from '~/stores/config';
-import type {
-    ServerToClientEvents,
-    ClientToServerEvents,
-} from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
 import { useTurnoutStore } from '@/stores/turnouts';
 
@@ -17,13 +12,7 @@ export default function () {
     const runtimeConfig = useRuntimeConfig();
     const socket = useSocketStore().socketRef;
 
-    // const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
-    //     typeof window !== 'undefined'
-    //         ? io('http://' + window.location.hostname + ':6868')
-    //         : io('http://localhost:6868');
-    // console.log('Composable');
     socket.on('connect', () => {
-        // connected.value = true;
         configStore.connected = true;
         console.log('Connected!\nId is ' + socket.id);
         socket.emit(
@@ -158,28 +147,16 @@ export default function () {
 
     socket.on('routes/setRouteComponents', (destinations, turnouts, links) => {
         console.log(links);
-        // console.log('setRouteComponents');
-        destinations.forEach((destination) => {
-            // usedDestinations.set(destination, 0);
-            // turnoutStore.getDestination(destination)?.usedInRoute = true
-            // destinationStates.set(destination, DestinationState.active);
-        });
         destinations
             .map((destinationID) => turnoutStore.getDestination(destinationID))
             .forEach((destination) => {
                 if (destination) destination.usedInRoute = true;
             });
-        // turnouts.forEach((turnout) => {
-        //     usedTurnouts.set(turnout, 0);
-        // });
         turnouts
             .map((turnoutID) => turnoutStore.getTurnout(turnoutID))
             .forEach((turnout) => {
                 if (turnout) turnout.usedInRoute = true;
             });
-        // links.forEach((link) => {
-        //     usedLinks.set(link, 0);
-        // });
         links
             .map((linkID) => turnoutStore.getTurnoutLink(linkID))
             .forEach((link) => {

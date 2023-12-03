@@ -1,4 +1,4 @@
-import { HardwareDevice } from '@trainlink-org/trainlink-types';
+import type { HardwareDevice } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
 export const useConfigStore = defineStore('config', () => {

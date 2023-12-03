@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import { computed } from 'vue';
-
 const props = defineProps({
     speed: { type: Number, required: true },
     disabled: Boolean,

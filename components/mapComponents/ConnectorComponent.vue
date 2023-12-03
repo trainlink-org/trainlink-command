@@ -1,7 +1,5 @@
 <!-- Connector component for the Routes page -->
 <script setup lang="ts">
-// import { computed  } from 'vue';
-import { after } from 'node:test';
 import { type Coordinate } from './shared';
 
 const props = defineProps({

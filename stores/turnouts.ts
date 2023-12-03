@@ -1,7 +1,7 @@
 import {
-    Destination,
-    Turnout,
-    TurnoutLink,
+    type Destination,
+    type Turnout,
+    type TurnoutLink,
     TurnoutState,
 } from '@trainlink-org/trainlink-types';
 import { defineStore, acceptHMRUpdate } from 'pinia';

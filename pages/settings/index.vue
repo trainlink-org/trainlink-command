@@ -1,13 +1,6 @@
 <!-- Page to manage locos in settings -->
 <script setup lang="ts">
-// import { useRouter } from 'vue-router';
-// import ModalComponent from '../ModalComponent.vue';
-
-// import { store } from '@/utils/main';
-// import { reactive, ref, type Ref } from 'vue';
-// import { socket } from '@/utils/socketHelper';
 import { useLocoStore } from '@/stores/locos';
-import { LocoClient } from '@/stores/locos';
 import { useSocketStore } from '@/stores/socket';
 
 const socket = useSocketStore().socketRef;

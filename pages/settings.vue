@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// import { useRoute, useRouter } from 'vue-router';
-// import { onMounted, onUnmounted, ref, watch } from 'vue';
-
 const router = useRouter();
 
 const detailsOpen = ref(false);

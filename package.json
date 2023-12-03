@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
-    "@trainlink-org/trainlink-types": "^0.0.1-alpha.5",
+    "@trainlink-org/trainlink-types": "github:trainlink-org/trainlink-types",
     "@trainlink-org/typescript-server": "github:trainlink-org/typescript-server",
     "electron-log": "^5.0.1",
     "electron-updater": "^6.1.1",

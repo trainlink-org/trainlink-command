@@ -78,7 +78,7 @@ function toggleDestinationNew(destination: Destination) {
         selectedDestinations.value = [];
     }
 }
-import panzoom, { PanZoom } from 'panzoom';
+import panzoom, { type PanZoom } from 'panzoom';
 
 const svgRef: Ref<SVGElement | null> = ref(null);
 const panzoomInstance: Ref<PanZoom | null> = ref(null);

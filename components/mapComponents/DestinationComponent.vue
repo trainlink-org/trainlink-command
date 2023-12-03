@@ -1,12 +1,6 @@
 <!-- Used to display a destination on the Routes map -->
 <script setup lang="ts">
-// import { computed } from 'vue';
-import {
-    calculateSize,
-    calculateCoord,
-    type Coordinate,
-    DestinationState,
-} from './shared';
+import { type Coordinate } from './shared';
 
 const props = defineProps({
     coordinate: { type: Object as () => Coordinate, required: true },
