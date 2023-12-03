@@ -4,6 +4,13 @@ export default defineNuxtConfig({
     // modules: ['nuxt-electron', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
     modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
     components: [{ path: '~/components/mapComponents' }, '~/components'],
+    // vite: {
+    //     build: {
+    //         rollupOptions: {
+    //             external: ['panzoom'],
+    //         },
+    //     },
+    // },
 
     // routeRules: {
     //     '/routes': { ssr: false },

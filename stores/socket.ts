@@ -13,7 +13,7 @@ import type {
     PID,
     RunningAutomationClient,
 } from '@trainlink-org/trainlink-types';
-import { setLinkStates } from '@/components/mapComponents/shared';
+// import { setLinkStates } from '@/components/mapComponents/shared';
 import {
     usedDestinations,
     destinationStates,
@@ -23,6 +23,7 @@ import {
 import { DestinationState } from '@/components/mapComponents/shared';
 
 export const useSocketStore = defineStore('socket', () => {
+    console.log('Socket store');
     // const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
     const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
         // 'http://' +
@@ -35,22 +36,22 @@ export const useSocketStore = defineStore('socket', () => {
     });
     const socketRef = ref(socket);
 
-    socket.on('metadata/initialState/turnouts', (packet) => {
-        packet.links.forEach((value) => {
-            turnoutLinks.set(value.id, value);
-        });
-        packet.turnouts.forEach((value) => {
-            turnouts.set(value.id, value);
-            setLinkStates(value.id, value.state);
-        });
-        packet.destinations.forEach((value) => {
-            destinations.set(value.id, value);
-        });
-    });
+    // socket.on('metadata/initialState/turnouts', (packet) => {
+    //     packet.links.forEach((value) => {
+    //         turnoutLinks.set(value.id, value);
+    //     });
+    //     packet.turnouts.forEach((value) => {
+    //         turnouts.set(value.id, value);
+    //         setLinkStates(value.id, value.state);
+    //     });
+    //     packet.destinations.forEach((value) => {
+    //         destinations.set(value.id, value);
+    //     });
+    // });
 
-    socket.on('metadata/initialState/trackPower', (state) => {
-        trackPower.value = state;
-    });
+    // socket.on('metadata/initialState/trackPower', (state) => {
+    //     trackPower.value = state;
+    // });
 
     // function loadState(locosState: string[]) {
     //     return new Promise<void>((resolve) => {
@@ -86,6 +87,7 @@ export const useSocketStore = defineStore('socket', () => {
     });
 
     socket.on('routes/setRouteComponents', (destinations, turnouts, links) => {
+        console.log('setRouteComponents');
         destinations.forEach((destination) => {
             usedDestinations.set(destination, 0);
             destinationStates.set(destination, DestinationState.active);
@@ -128,11 +130,11 @@ export const useSocketStore = defineStore('socket', () => {
     //     console.log(store.toString());
     // });
 
-    socket.on('throttle/trackPowerUpdate', (state, socketId) => {
-        if (socketId !== socket.id) {
-            trackPower.value = state;
-        }
-    });
+    // socket.on('throttle/trackPowerUpdate', (state, socketId) => {
+    //     if (socketId !== socket.id) {
+    //         trackPower.value = state;
+    //     }
+    // });
 
     return {
         socketRef,

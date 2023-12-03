@@ -1,17 +1,19 @@
 import { io, Socket } from 'socket.io-client';
 import { useLocoStore } from '~/stores/locos';
-import { Loco } from '@trainlink-org/trainlink-types';
+import { isDestination, isTurnout, Loco } from '@trainlink-org/trainlink-types';
 import { useConfigStore } from '~/stores/config';
 import type {
     ServerToClientEvents,
     ClientToServerEvents,
 } from '@trainlink-org/trainlink-types';
 import { useSocketStore } from '@/stores/socket';
+import { useTurnoutStore } from '@/stores/turnouts';
 
 export default function () {
     const context = useNuxtApp();
     const locoStore = useLocoStore(context.$pinia);
     const configStore = useConfigStore(context.$pinia);
+    const turnoutStore = useTurnoutStore(context.$pinia);
     const runtimeConfig = useRuntimeConfig();
     const socket = useSocketStore().socketRef;
 
@@ -62,6 +64,19 @@ export default function () {
         }
     });
 
+    socket.on('metadata/initialState/turnouts', (packet) => {
+        packet.links.forEach((turnoutLinks) => {
+            turnoutStore.addTurnoutLink(turnoutLinks);
+        });
+        packet.turnouts.forEach((turnout) => {
+            turnoutStore.addTurnout(turnout);
+            turnoutStore.setLinkStates(turnout.id, turnout.state);
+        });
+        packet.destinations.forEach((destination) => {
+            turnoutStore.addDestination(destination);
+        });
+    });
+
     socket.on('metadata/availableDrivers', (drivers) => {
         configStore.availableDrivers = drivers;
     });
@@ -84,8 +99,8 @@ export default function () {
         });
     });
 
-    socket.on('throttle/speedUpdate', (identifier, speed, socketId) => {
-        if (typeof identifier === 'number' && socketId !== socket.id) {
+    socket.on('throttle/speedUpdate', (identifier, speed, socketID) => {
+        if (typeof identifier === 'number' && socketID !== socket.id) {
             const loco = locoStore.getLoco(identifier);
             if (loco) loco.speed = speed;
         }
@@ -132,6 +147,52 @@ export default function () {
 
     socket.on('hardware/newActiveDevice', (device) => {
         configStore.device = device;
+    });
+
+    socket.on('routes/mapPointUpdate', (object) => {
+        if (isTurnout(object)) turnoutStore.updateTurnout(object);
+        else if (isDestination(object)) turnoutStore.updateDestination(object);
+    });
+
+    socket.on('routes/turnoutLinkUpdate', (turnoutLink) => {});
+
+    socket.on('routes/setRouteComponents', (destinations, turnouts, links) => {
+        console.log(links);
+        // console.log('setRouteComponents');
+        destinations.forEach((destination) => {
+            // usedDestinations.set(destination, 0);
+            // turnoutStore.getDestination(destination)?.usedInRoute = true
+            // destinationStates.set(destination, DestinationState.active);
+        });
+        destinations
+            .map((destinationID) => turnoutStore.getDestination(destinationID))
+            .forEach((destination) => {
+                if (destination) destination.usedInRoute = true;
+            });
+        // turnouts.forEach((turnout) => {
+        //     usedTurnouts.set(turnout, 0);
+        // });
+        turnouts
+            .map((turnoutID) => turnoutStore.getTurnout(turnoutID))
+            .forEach((turnout) => {
+                if (turnout) turnout.usedInRoute = true;
+            });
+        // links.forEach((link) => {
+        //     usedLinks.set(link, 0);
+        // });
+        links
+            .map((linkID) => turnoutStore.getTurnoutLink(linkID))
+            .forEach((link) => {
+                if (link) link.usedInRoute = true;
+            });
+    });
+
+    socket.on('metadata/initialState/trackPower', (trackPower) => {
+        configStore.trackPower = trackPower;
+    });
+
+    socket.on('throttle/trackPowerUpdate', (trackPower) => {
+        configStore.trackPower = trackPower;
     });
 
     return { socket };

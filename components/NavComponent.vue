@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import { RouterLink, useRouter } from 'vue-router';
 
-import { trackPower } from '@/utils/main';
+// import { trackPower } from '@/utils/main';
 
 // import SelectNavComponent from './SelectNavComponent.vue';
 // import { socket } from '@/utils/socketHelper';
@@ -9,6 +9,7 @@ import { useConfigStore } from '@/stores/config';
 import { useSocketStore } from '@/stores/socket';
 
 const router = useRouter();
+const configStore = useConfigStore();
 
 function selectHandler(event: string) {
     console.log(event);
@@ -16,9 +17,8 @@ function selectHandler(event: string) {
 }
 
 function setState() {
-    socket.emit('throttle/setTrackPower', !trackPower.value);
+    socket.emit('throttle/setTrackPower', !configStore.trackPower);
 }
-const configStore = useConfigStore();
 const socket = useSocketStore().socketRef;
 </script>
 
@@ -37,7 +37,11 @@ const socket = useSocketStore().socketRef;
             />
         </svg>
         <label class="switch">
-            <input v-model="trackPower" type="checkbox" @click="setState" />
+            <input
+                v-model="configStore.trackPower"
+                type="checkbox"
+                @click="setState"
+            />
             <span class="slider round" />
         </label>
     </div>

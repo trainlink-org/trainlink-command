@@ -25,7 +25,9 @@ import {
 // import ModalComponent from '../ModalComponent.vue';
 // import { socket } from '@/utils/socketHelper';
 import { useSocketStore } from '@/stores/socket';
+import { useTurnoutStore } from '@/stores/turnouts';
 const socket = useSocketStore().socketRef;
+const turnoutStore = useTurnoutStore();
 
 const changesMade = ref(false);
 
@@ -113,7 +115,7 @@ function move({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
         offset.x = offsetX - dragOffset.x;
         offset.y = offsetY - dragOffset.y;
         if (beingMoved.value > 0) {
-            const turnout = turnouts.get(beingMoved.value);
+            const turnout = turnoutStore.getTurnout(beingMoved.value);
             if (turnout) {
                 turnout.connections.forEach((linkId) => {
                     const link = turnoutLinks.get(linkId);
@@ -210,14 +212,14 @@ const offsets = reactive(new Map<number, Coordinate>());
 const linkStartOffsets = reactive(new Map<number, Coordinate>());
 const linkEndOffsets = reactive(new Map<number, Coordinate>());
 
-Array.from(turnouts.values()).forEach((element) => {
+turnoutStore.allTurnouts.forEach((element) => {
     offsets.set(element.id, { x: 3, y: 3 });
 });
-Array.from(destinations.values()).forEach((element) => {
+turnoutStore.allDestinations.forEach((element) => {
     offsets.set(element.id, { x: 3, y: 3 });
 });
 
-Array.from(turnoutLinks.values()).forEach((element) => {
+turnoutStore.allTurnoutLinks.forEach((element) => {
     linkStartOffsets.set(element.id, { x: 3, y: 3 });
     linkEndOffsets.set(element.id, { x: 3, y: 3 });
 });
@@ -362,8 +364,8 @@ function createLine(ID: number) {
         });
         linkStartOffsets.set(nextID, { x: 3, y: 3 });
         linkEndOffsets.set(nextID, { x: 3, y: 3 });
-        turnouts.get(ID)?.connections.push(nextID);
-        turnouts.get(newLineStart.value)?.connections.push(nextID);
+        turnoutStore.getTurnout(ID)?.connections.push(nextID);
+        turnoutStore.getTurnout(newLineStart.value)?.connections.push(nextID);
         newLineStart.value = undefined;
     } else if (newLineStart.value === ID) {
         newLineStart.value = undefined;
@@ -379,9 +381,15 @@ function saveChanges() {
         if (value.x !== 3 || value.y !== 3) {
             let coord;
             if (id > 0) {
-                coord = turnouts.get(id)?.coordinate || { x: 0, y: 0 };
+                coord = turnoutStore.getTurnout(id)?.coordinate || {
+                    x: 0,
+                    y: 0,
+                };
             } else {
-                coord = destinations.get(id)?.coordinate || { x: 0, y: 0 };
+                coord = turnoutStore.getDestination(id)?.coordinate || {
+                    x: 0,
+                    y: 0,
+                };
             }
             socket.emit(
                 'config/routes/changeObjectCoordinate',
@@ -423,8 +431,9 @@ function discardChanges() {
                 :key="link.id"
                 :start="
                     addCoords(
-                        turnouts.get(link.start)?.coordinate ||
-                            destinations.get(link.start)?.coordinate || {
+                        turnoutStore.getTurnout(link.start)?.coordinate ||
+                            turnoutStore.getDestination(link.start)
+                                ?.coordinate || {
                                 x: -5,
                                 y: -5,
                             },
@@ -436,7 +445,10 @@ function discardChanges() {
                 :points="applyPointOffsets(link.points)"
                 :end="
                     addCoords(
-                        turnouts.get(link.end)?.coordinate || { x: -5, y: -5 },
+                        turnoutStore.getTurnout(link.end)?.coordinate || {
+                            x: -5,
+                            y: -5,
+                        },
                         calculateCoordInverse(
                             linkEndOffsets.get(link.id) || { x: 0, y: 0 },
                         ),
@@ -445,7 +457,7 @@ function discardChanges() {
                 :active-route="false"
             />
             <TurnoutComponent
-                v-for="turnout in turnouts.values()"
+                v-for="turnout in turnoutStore.allTurnouts"
                 :key="turnout.id"
                 :coordinate="{
                     x:
@@ -463,8 +475,8 @@ function discardChanges() {
                             ? 'cursor-grabbing'
                             : 'cursor-grab'
                         : newLineStart === turnout.id
-                        ? 'fill-red-500'
-                        : 'fill-black'
+                          ? 'fill-red-500'
+                          : 'fill-black'
                 "
                 @mousedown="
                     (event: MouseEvent) =>
