@@ -21,7 +21,7 @@ const emit = defineEmits<{
         @click="emit('cancel')"
     >
         <div
-            class="flex h-1/3 w-2/3 flex-col justify-between rounded-lg border-4 border-borderColor-300 bg-white text-center md:w-1/3 relative"
+            class="flex h-2/5 w-2/3 flex-col justify-between rounded-lg border-4 border-borderColor-300 bg-white text-center md:w-3/5 lg:w-2/5 relative"
             @click="(event) => event.stopPropagation()"
         >
             <h1
