@@ -15,7 +15,6 @@ const props = defineProps({
 
 const midPoints = calculateMidPoints(props.start, props.points, props.end);
 const path = computed(() => {
-
     let path = `M ${midPoints.startMid.x} ${midPoints.startMid.y}`;
 
     Array.from(props.points).forEach((point) => {
@@ -36,10 +35,8 @@ function calculateMidPoints(
 ) {
     const distanceFactor = 5;
     if (
-
         Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) <
         distanceFactor
-
     ) {
         const midPoint = {
             x:
@@ -107,8 +104,8 @@ function calculateMidPoints(
             props.startSegActive
                 ? 'stroke-green-600'
                 : props.activeRoute
-                ? 'stroke-blue-600'
-                : 'stroke-black'
+                  ? 'stroke-blue-600'
+                  : 'stroke-black'
         "
     />
     <path
@@ -126,8 +123,8 @@ function calculateMidPoints(
             props.endSegActive
                 ? `stroke-green-600`
                 : props.activeRoute
-                ? 'stroke-blue-600'
-                : `stroke-black`
+                  ? 'stroke-blue-600'
+                  : `stroke-black`
         "
     />
 </template>

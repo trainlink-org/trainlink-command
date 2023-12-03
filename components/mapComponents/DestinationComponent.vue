@@ -29,8 +29,8 @@ const yCoord = computed(() => {
             props.active
                 ? 'fill-blue-600'
                 : props.selected
-                ? 'fill-red-600'
-                : 'fill-black'
+                  ? 'fill-red-600'
+                  : 'fill-black'
         "
         :x="xCoord - 1"
         :y="yCoord - 1"

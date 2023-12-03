@@ -475,8 +475,8 @@ function discardChanges() {
                             ? 'cursor-grabbing'
                             : 'cursor-grab'
                         : newLineStart === turnout.id
-                        ? 'fill-red-500'
-                        : 'fill-black'
+                          ? 'fill-red-500'
+                          : 'fill-black'
                 "
                 @mousedown="
                     (event: MouseEvent) =>
