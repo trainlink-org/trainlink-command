@@ -59,15 +59,20 @@ export default function () {
     });
 
     socket.on('metadata/initialState/turnouts', (packet) => {
+        const transactionID = turnoutStore.startTransaction();
         packet.links.forEach((turnoutLinks) => {
             turnoutStore.addTurnoutLink(turnoutLinks);
         });
         packet.turnouts.forEach((turnout) => {
-            turnoutStore.addTurnout(turnout);
+            turnoutStore.addTurnout(transactionID, turnout);
             turnoutStore.setLinkStates(turnout.id, turnout.state);
         });
         packet.destinations.forEach((destination) => {
-            turnoutStore.addDestination(destination);
+            turnoutStore.addDestination(transactionID, destination);
+        });
+        turnoutStore.applyTransaction(transactionID);
+        turnoutStore.allTurnouts.forEach((turnout) => {
+            turnoutStore.setLinkStates(turnout.id, turnout.state);
         });
     });
 
