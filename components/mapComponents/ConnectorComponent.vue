@@ -9,29 +9,45 @@ const props = defineProps({
 });
 
 const turnoutStore = useTurnoutStore();
-const startCoord = turnoutStore.getMapPoint(props.link.start)?.coordinate || {
-    x: -5,
-    y: -5,
-};
-const endCoord = turnoutStore.getMapPoint(props.link.end)?.coordinate || {
-    x: -5,
-    y: -5,
-};
+const startCoord = computed(
+    () =>
+        turnoutStore.getMapPoint(props.link.start, props.settings)
+            ?.coordinate || {
+            x: -5,
+            y: -5,
+        },
+);
+const endCoord = computed(
+    () =>
+        turnoutStore.getMapPoint(props.link.end, props.settings)
+            ?.coordinate || {
+            x: -5,
+            y: -5,
+        },
+);
 
-const midPoints = calculateMidPoints(startCoord, props.link.points, endCoord);
+const midPoints = computed(() =>
+    calculateMidPoints(startCoord.value, props.link.points, endCoord.value),
+);
 const path = computed(() => {
-    let path = `M ${midPoints.startMid.x} ${midPoints.startMid.y}`;
+    let path = `M ${midPoints.value.startMid.x} ${midPoints.value.startMid.y}`;
 
     Array.from(props.link.points).forEach((point) => {
         const virtualPoint = point;
         path = `${path} L ${virtualPoint.x} ${virtualPoint.y}`;
     });
 
-    path = `${path} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
+    path = `${path} L ${midPoints.value.endMid.x} ${midPoints.value.endMid.y}`;
     return path;
 });
-const startPath = `M ${startCoord.x} ${startCoord.y} L ${midPoints.startMid.x} ${midPoints.startMid.y}`;
-const endPath = `M ${endCoord.x} ${endCoord.y} L ${midPoints.endMid.x} ${midPoints.endMid.y}`;
+const startPath = computed(
+    () =>
+        `M ${startCoord.value.x} ${startCoord.value.y} L ${midPoints.value.startMid.x} ${midPoints.value.startMid.y}`,
+);
+const endPath = computed(
+    () =>
+        `M ${endCoord.value.x} ${endCoord.value.y} L ${midPoints.value.endMid.x} ${midPoints.value.endMid.y}`,
+);
 </script>
 
 <template>

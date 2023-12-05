@@ -27,7 +27,7 @@ export const useTurnoutStore = defineStore('turnouts', () => {
     const nextTransaction = ref(0);
 
     const allTurnouts = computed(() => {
-        return Array.from(turnouts.value.values());
+        return Array.from(reactive(turnouts.value.values()));
     });
     const allDestinations = computed(() => {
         return Array.from(destinations.value.values());
@@ -39,15 +39,6 @@ export const useTurnoutStore = defineStore('turnouts', () => {
     function getTurnout(id: number, inclTransactions: boolean = false) {
         if (inclTransactions) {
             return allTurnouts.value
-                .concat(
-                    Array.from(transactions.value.values())
-                        .map((transaction) =>
-                            Array.from(
-                                transaction.newObjects.turnouts.values(),
-                            ),
-                        )
-                        .flat(),
-                )
                 .filter(
                     (turnout) =>
                         !Array.from(transactions.value.values())
@@ -57,6 +48,15 @@ export const useTurnoutStore = defineStore('turnouts', () => {
                             )
                             .flat()
                             .includes(turnout.id),
+                )
+                .concat(
+                    Array.from(transactions.value.values())
+                        .map((transaction) =>
+                            Array.from(
+                                transaction.newObjects.turnouts.values(),
+                            ),
+                        )
+                        .flat(),
                 )
                 .filter((turnout) => turnout.id === id)[0];
         }
@@ -121,6 +121,11 @@ export const useTurnoutStore = defineStore('turnouts', () => {
 
     function addTurnoutLink(turnoutLink: TurnoutLink) {
         connections.value.set(turnoutLink.id, turnoutLink);
+    }
+
+    function deleteMapPoint(transactionID: number, mapPointID: number) {
+        deleteDestination(transactionID, mapPointID);
+        deleteTurnout(transactionID, mapPointID);
     }
 
     function deleteDestination(transactionID: number, destinationID: number) {
@@ -275,6 +280,7 @@ export const useTurnoutStore = defineStore('turnouts', () => {
         addTurnoutLink,
         deleteTurnout,
         deleteDestination,
+        deleteMapPoint,
         updateTurnout,
         updateDestination,
         setLinkStates,

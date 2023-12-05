@@ -5,6 +5,7 @@ import type { Destination } from '@trainlink-org/trainlink-types';
 const props = defineProps({
     destination: { type: Object as () => Destination, required: true },
     selected: { type: Boolean, required: true },
+    settings: { type: Boolean, default: false },
 });
 </script>
 
@@ -12,7 +13,7 @@ const props = defineProps({
     <rect
         class="hover:fill-primary-400"
         :class="
-            props.destination.usedInRoute
+            props.destination.usedInRoute && !settings
                 ? 'fill-blue-600'
                 : props.selected
                   ? 'fill-red-600'

@@ -14,21 +14,21 @@ const turnoutStore = useTurnoutStore();
 
 const transactionID: Ref<number | null> = ref(null);
 
-enum AddModalType {
+enum ModalType {
     None = 'None',
     Destination = 'Destination',
     Turnout = 'Turnout',
 }
 
-let addModalData = reactive(defaultAddModalState());
+let modalData = reactive(defaultModalState());
 
-function defaultAddModalState() {
+function defaultModalState() {
     return {
         values: {
-            name: 'Test',
-            id: '20',
-            xCoord: 90,
-            yCoord: 80,
+            name: '',
+            id: '',
+            xCoord: 0,
+            yCoord: 0,
         },
         errors: {
             name: {
@@ -44,23 +44,25 @@ function defaultAddModalState() {
                 msg: '',
             },
         },
-        objectType: AddModalType.Turnout,
+        objectType: ModalType.None,
         open: false,
+        edit: false,
+        editID: -1,
     };
 }
 
 function addMapPoint() {
-    if (isNaN(Number(addModalData.values.id))) {
-        addModalData.errors.id = {
+    if (isNaN(Number(modalData.values.id))) {
+        modalData.errors.id = {
             msg: "That ID isn't a number",
             visible: true,
         };
         return false;
     } else if (
-        turnoutStore.getMapPoint(Number(addModalData.values.id), true) !==
+        turnoutStore.getMapPoint(Number(modalData.values.id), true) !==
         undefined
     ) {
-        addModalData.errors.id = {
+        modalData.errors.id = {
             msg: 'That ID is already used',
             visible: true,
         };
@@ -68,13 +70,13 @@ function addMapPoint() {
     } else {
         if (transactionID.value == null)
             transactionID.value = turnoutStore.startTransaction();
-        if (addModalData.objectType === AddModalType.Turnout) {
+        if (modalData.objectType === ModalType.Turnout) {
             const newTurnout: Turnout = {
-                id: Number(addModalData.values.id),
-                name: addModalData.values.name,
+                id: Number(modalData.values.id),
+                name: modalData.values.name,
                 coordinate: {
-                    x: addModalData.values.xCoord,
-                    y: addModalData.values.yCoord,
+                    x: modalData.values.xCoord,
+                    y: modalData.values.yCoord,
                 },
                 state: TurnoutState.closed,
                 primaryDirection: -1,
@@ -84,20 +86,20 @@ function addMapPoint() {
             turnoutStore.addTurnout(transactionID.value, newTurnout);
         } else {
             const newDestination: Destination = {
-                id: Number(addModalData.values.id),
-                name: addModalData.values.name,
+                id: Number(modalData.values.id),
+                name: modalData.values.name,
                 description: '',
                 coordinate: {
-                    x: addModalData.values.xCoord,
-                    y: addModalData.values.yCoord,
+                    x: modalData.values.xCoord,
+                    y: modalData.values.yCoord,
                 },
                 usedInRoute: false,
             };
             turnoutStore.addDestination(transactionID.value, newDestination);
         }
     }
-    addModalData.open = false;
-    addModalData = reactive(defaultAddModalState());
+    modalData.open = false;
+    modalData = reactive(defaultModalState());
     return true;
 }
 
@@ -117,12 +119,11 @@ function select(id: number, shift: boolean, isMapPoint: boolean) {
     }
     if (selectedArray.length === 0 && !shift) {
         selectedArray.push(id);
-    } else if (
-        selectedArray.length === 1 &&
-        selectedArray.includes(id) &&
-        !shift
-    ) {
-        selectedArray.pop();
+    } else if (selectedArray.length === 1 && !shift) {
+        if (selectedArray.pop() !== id) selectedArray.push(id);
+    } else if (selectedArray.length > 1 && !shift) {
+        selectedArray.length = 0;
+        selectedArray.push(id);
     } else if (shift && selectedArray.includes(id)) {
         selectedArray.splice(selectedArray.indexOf(id), 1);
     } else if (shift) {
@@ -141,6 +142,38 @@ function deleteElements() {
         }
     });
     selectedElements.mapPoints = [];
+}
+
+function editElement(id = -1) {
+    modalData.edit = true;
+    if (id === -1) id = selectedElements.mapPoints[0];
+    const destination = turnoutStore.getDestination(id);
+    const turnout = turnoutStore.getTurnout(id);
+    if (destination) {
+        modalData.objectType = ModalType.Destination;
+        modalData.values.id = destination.id.toString();
+        modalData.editID = destination.id;
+        modalData.values.name = destination.name;
+        modalData.values.xCoord = destination.coordinate.x;
+        modalData.values.yCoord = destination.coordinate.y;
+    } else if (turnout) {
+        modalData.objectType = ModalType.Turnout;
+        modalData.values.id = turnout.id.toString();
+        modalData.editID = turnout.id;
+        modalData.values.name = turnout.name;
+        modalData.values.xCoord = turnout.coordinate.x;
+        modalData.values.yCoord = turnout.coordinate.y;
+    }
+    selectedElements.mapPoints.length = 0;
+    modalData.open = true;
+}
+
+function submitEdit() {
+    if (!transactionID.value)
+        transactionID.value = turnoutStore.startTransaction();
+    turnoutStore.deleteMapPoint(transactionID.value, modalData.editID);
+    addMapPoint();
+    modalData = reactive(defaultModalState());
 }
 
 // Panzoom code --------------------------------
@@ -196,6 +229,10 @@ function homePanZoom() {
                 class="h-full w-full z-0"
                 ref="svgRef"
                 viewBox="0 0 100 100"
+                @keydown.esc="
+                    selectedElements.links.length = 0;
+                    selectedElements.mapPoints.length = 0;
+                "
             >
                 <g ref="panZoomRef">
                     <!-- viewBox="-1000 -1000 2000 2000" -->
@@ -210,7 +247,8 @@ function homePanZoom() {
                         v-for="turnout in turnoutStore.allTurnoutsInclTransactions"
                         :key="turnout.id"
                         :turnout="turnout"
-                        @dblclick.stop="console.log('Doubleclick!')"
+                        :settings="true"
+                        @dblclick.stop="editElement(turnout.id)"
                         @click.exact="select(turnout.id, false, true)"
                         @click.shift="select(turnout.id, true, true)"
                         :class="
@@ -223,8 +261,9 @@ function homePanZoom() {
                         v-for="destination in turnoutStore.allDestinationsInclTransactions"
                         :key="destination.id"
                         :destination="destination"
+                        :settings="true"
                         :selected="false"
-                        @dblclick.stop="console.log('Doubleclick!')"
+                        @dblclick.stop="editElement(destination.id)"
                         @click.exact="select(destination.id, false, true)"
                         @click.shift="select(destination.id, true, true)"
                         :class="
@@ -260,7 +299,7 @@ function homePanZoom() {
             <!-- Add Icon -->
             <button
                 class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-green-400 md:w-1/6"
-                @click="addModalData.open = !addModalData.open"
+                @click="modalData.open = true"
             >
                 <!-- Boostrap icons: plus -->
                 <svg
@@ -277,15 +316,24 @@ function homePanZoom() {
             </button>
             <!-- Edit Icon -->
             <button
-                class="group flex h-7 w-1/5 items-center rounded-full leading-none hover:bg-primary-200 active:bg-green-400 md:w-1/6"
+                class="group flex h-7 w-1/5 items-center rounded-full leading-none enabled:hover:bg-primary-200 enabled:active:bg-green-400 md:w-1/6 disabled:fill-primary-500 disabled:text-primary-500 fill-black text-black"
                 :class="true ? 'bg-inherit' : 'bg-accent-400'"
+                @click="editElement()"
+                :disabled="
+                    (selectedElements.mapPoints.length === 1) ===
+                    (selectedElements.links.length === 1)
+                "
             >
                 <!-- Bootstrap icons: pencil-square -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
                     viewBox="-4 -4 20 20"
-                    class="h-7 group-hover:fill-green-400"
+                    class="h-7 enabled:group-hover:fill-green-400"
+                    :disabled="
+                        (selectedElements.mapPoints.length === 1) !==
+                        (selectedElements.links.length === 1)
+                    "
                 >
                     <path
                         d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
@@ -295,17 +343,11 @@ function homePanZoom() {
                         d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
                     />
                 </svg>
-                Edit lines
+                Edit
             </button>
             <!-- Delete Icon -->
             <button
-                class="group flex h-7 w-1/5 items-center rounded-full leading-none enabled:hover:bg-primary-200 enabled:active:bg-red-400 md:w-1/6"
-                :class="
-                    selectedElements.mapPoints.length ||
-                    selectedElements.links.length
-                        ? 'fill-black text-black'
-                        : 'fill-primary-500 text-primary-500 disable'
-                "
+                class="group flex h-7 w-1/5 items-center rounded-full leading-none enabled:hover:bg-primary-200 enabled:active:bg-red-400 md:w-1/6 disabled:fill-primary-500 disabled:text-primary-500 fill-black text-black"
                 :disabled="
                     !(
                         selectedElements.mapPoints.length ||
@@ -402,21 +444,24 @@ function homePanZoom() {
         </svg>
     </div>
     <ModalComponent
-        v-if="addModalData.open"
-        title="Add Item"
-        submit-text="Add"
-        @submit="addMapPoint"
-        @cancel="addModalData.open = false"
+        v-if="modalData.open"
+        :title="modalData.edit ? 'Edit Item' : 'Add Item'"
+        :submit-text="modalData.edit ? 'Edit' : 'Add'"
+        @submit="modalData.edit ? submitEdit() : addMapPoint()"
+        @cancel="
+            modalData.open = false;
+            modalData = reactive(defaultModalState());
+        "
     >
         <div class="flex h-20 w-full justify-around overflow-y-scroll">
             <div
                 class="flex h-full w-1/3 flex-col border border-black"
                 :class="
-                    addModalData.objectType === AddModalType.Destination
+                    modalData.objectType === ModalType.Destination
                         ? 'bg-accent-400'
                         : 'bg-inherit'
                 "
-                @click="addModalData.objectType = AddModalType.Destination"
+                @click="modalData.objectType = ModalType.Destination"
             >
                 <svg class="h-full w-full" viewBox="0 0 10 10">
                     <rect width="5" height="5" x="2.5" y="2.5" />
@@ -426,11 +471,11 @@ function homePanZoom() {
             <div
                 class="flex h-full w-1/3 flex-col border border-black"
                 :class="
-                    addModalData.objectType === AddModalType.Turnout
+                    modalData.objectType === ModalType.Turnout
                         ? 'bg-accent-400'
                         : 'bg-inherit'
                 "
-                @click="addModalData.objectType = AddModalType.Turnout"
+                @click="modalData.objectType = ModalType.Turnout"
             >
                 <svg class="h-full w-full" viewBox="0 0 10 10">
                     <circle r="2.5" cx="5" cy="5" />
@@ -445,58 +490,54 @@ function homePanZoom() {
             <p class="col-span-2 sm:col-span-1">Name:</p>
             <div class="col-span-2">
                 <input
-                    v-model="addModalData.values.name"
+                    v-model="modalData.values.name"
                     type="text"
                     class="w-full rounded border-2 border-primary-400 invalid:border-red-600"
                 />
                 <p
                     class="text-red-600"
                     :class="
-                        addModalData.errors.name.visible
-                            ? 'visible'
-                            : 'invisible'
+                        modalData.errors.name.visible ? 'visible' : 'invisible'
                     "
                 >
-                    {{ addModalData.errors.name.msg }}
+                    {{ modalData.errors.name.msg }}
                 </p>
             </div>
             <p class="col-span-2 sm:col-span-1">Address:</p>
             <div class="col-span-2">
                 <input
-                    v-model="addModalData.values.id"
+                    v-model="modalData.values.id"
                     type="text"
                     class="w-full rounded border-2 border-primary-400 invalid:border-red-600"
                 />
                 <p
                     class="text-red-600"
                     :class="
-                        addModalData.errors.id.visible ? 'visible' : 'invisible'
+                        modalData.errors.id.visible ? 'visible' : 'invisible'
                     "
                 >
-                    {{ addModalData.errors.id.msg }}
+                    {{ modalData.errors.id.msg }}
                 </p>
             </div>
             <p class="col-span-2 sm:col-span-1">Coordinate (x, y):</p>
             <div class="col-span-2">
                 <input
-                    v-model="addModalData.values.xCoord"
+                    v-model="modalData.values.xCoord"
                     type="number"
                     class="rounded border-2 border-primary-400 invalid:border-red-600 w-1/3 m-1"
                 />
                 <input
-                    v-model="addModalData.values.yCoord"
+                    v-model="modalData.values.yCoord"
                     type="number"
                     class="w-1/3 rounded border-2 border-primary-400 invalid:border-red-600"
                 />
                 <p
                     class="text-red-600"
                     :class="
-                        addModalData.errors.coord.visible
-                            ? 'visible'
-                            : 'invisible'
+                        modalData.errors.coord.visible ? 'visible' : 'invisible'
                     "
                 >
-                    {{ addModalData.errors.coord.msg }}
+                    {{ modalData.errors.coord.msg }}
                 </p>
             </div>
         </div>
